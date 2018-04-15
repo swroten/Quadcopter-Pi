@@ -4,11 +4,9 @@ import Quadcopter
 import IMU
 import GPS
 
-
-
-print "For first time launch, select calibrate"
-print "Type the exact word for the function you want"
-print "imu or gps or calibrate OR manual OR control OR arm OR stop"
+print("For first time launch, select calibrate")
+print("Type the exact word for the function you want")
+print("imu or gps or calibrate OR manual OR control OR arm OR stop")
 
 # Create Quadcopter
 quad = Quadcopter.Quadcopter()
@@ -16,35 +14,35 @@ quad = Quadcopter.Quadcopter()
 # Run Forever
 while True:
     # Get Input From User
-    inp = raw_input()	
-	
-	# Perform function based on input
+    inp = raw_input()    
+    
+    # Perform function based on input
     if inp == "manual":
-		# Perform Manual Drive Function 
+        # Perform Manual Drive Function 
         quad.manual_drive()
     elif inp == "calibrate":
-		# Perform Calibrate Drive Function
+        # Perform Calibrate Drive Function
         quad.calibrate()
     elif inp == "arm":
-		# Perform Arm Drive Function
+        # Perform Arm Drive Function
         quad.arm()
     elif inp == "control":
-		# Perform Control Drive Function
+        # Perform Control Drive Function
         quad.control()    
     elif inp == "imu":
-		# Create IMU Class
-		imu = IMU.IMU()
-		
-		# Print IMU
-		imu.PrintIMUValues()
-		
+        # Create IMU Class
+        imu = IMU.IMU()
+        
+        # Print IMU
+        imu.PrintIMUValues()
+        
     elif inp == "gps":
-		# Create GPS Class
-		gps = GPS.GPS()
-		
-		# Print GPS
-		gps.PrintGPS()
-	
+        # Create GPS Class
+        gps = GPS.GPS()
+        
+        # Print GPS
+        gps.PrintGPS()
+    
     elif inp == "frontleftmaxpulsewidth":
         # Set all Other Motors to Max Speed
         pi.set_servo_pulsewidth(BackLeft, BackLeftMaximumPulseWidth)
@@ -55,7 +53,7 @@ while True:
         frontLeftMaxPulseWidth = get_max_pulse_width(FrontLeft, FrontLeftMaximumPulseWidth, MaximumRPM, FrontLeftMinimumPulseWidth, MaximumPulseWidth, 1)
     
         # Print Max Pulse Width
-        print "Front Left Max Pulse Width: %d" % frontLeftMaxPulseWidth
+        print("Front Left Max Pulse Width: %d" % frontLeftMaxPulseWidth)
             
         # Break
         break
@@ -69,7 +67,7 @@ while True:
         frontRightMaxPulseWidth = get_max_pulse_width(FrontRight, FrontRightMaximumPulseWidth, MaximumRPM, FrontRightMinimumPulseWidth, MaximumPulseWidth, 1)
     
         # Print Max Pulse Width
-        print "Front Right Max Pulse Width: %d" % frontRightMaxPulseWidth
+        print("Front Right Max Pulse Width: %d" % frontRightMaxPulseWidth)
         
         # Break
         break
@@ -83,7 +81,7 @@ while True:
         backLeftMaxPulseWidth = get_max_pulse_width(BackLeft, BackLeftMaximumPulseWidth, MaximumRPM, BackLeftMinimumPulseWidth, MaximumPulseWidth, 1)
     
         # Print Max Pulse Width
-        print "Back Left Max Pulse Width: %d" % backLeftMaxPulseWidth
+        print("Back Left Max Pulse Width: %d" % backLeftMaxPulseWidth)
         
         # Break
         break
@@ -97,7 +95,7 @@ while True:
         backRightMaxPulseWidth = get_max_pulse_width(BackRight, BackRightMaximumPulseWidth, MaximumRPM, BackRightMinimumPulseWidth, MaximumPulseWidth, 1)
     
         # Print Max Pulse Width
-        print "Back Right Max Pulse Width: %d" % backRightMaxPulseWidth
+        print("Back Right Max Pulse Width: %d" % backRightMaxPulseWidth)
         
         # Break
         break
@@ -108,5 +106,5 @@ while True:
         stop()
         break
     else:
-        print "Program Exiting..."
+        print('Program Exiting...')
         break
