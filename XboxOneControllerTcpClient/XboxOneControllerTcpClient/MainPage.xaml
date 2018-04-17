@@ -1,0 +1,430 @@
+﻿<Page
+    x:Class="XboxOneControllerTcpClient.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:XboxOneControllerTcpClient"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:Charting="using:WinRTXamlToolkit.Controls.DataVisualization.Charting"
+    mc:Ignorable="d">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0"
+              Margin="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0"
+                       FontSize="16"
+                       FontWeight="Bold"
+                       VerticalAlignment="Stretch"
+                       HorizontalAlignment="Stretch"
+                       Text="Controller Observed Values:" />
+        </Grid>
+        <Grid Grid.Row="1"
+              Margin="5">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid Margin="5"
+                  Grid.Row="0"
+                  Grid.Column="0"
+                  VerticalAlignment="Stretch"
+                  HorizontalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0"
+                           VerticalAlignment="Stretch"
+                           HorizontalAlignment="Stretch"
+                           Text="Left Thumb Stick X-value" />
+                <TextBlock Grid.Column="1"
+                           VerticalAlignment="Stretch"
+                           HorizontalAlignment="Stretch"
+                           Text="{Binding LeftThumbStickX}" />
+            </Grid>
+            <Grid Margin="5"
+                  Grid.Row="0"
+                  Grid.Column="1"
+                  VerticalAlignment="Stretch"
+                  HorizontalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0"
+                           VerticalAlignment="Stretch"
+                           HorizontalAlignment="Stretch"
+                           Text="Left Thumb Stick Y-value" />
+                <TextBlock Grid.Column="1"
+                           VerticalAlignment="Stretch"
+                           HorizontalAlignment="Stretch"
+                           Text="{Binding LeftThumbStickY}" />
+            </Grid>
+            <Grid Margin="5"
+                  Grid.Row="1"
+                  Grid.Column="0"
+                  VerticalAlignment="Stretch"
+                  HorizontalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0"
+                           VerticalAlignment="Stretch"
+                           HorizontalAlignment="Stretch"
+                           Text="Right Thumb Stick X-value" />
+                <TextBlock Grid.Column="1"
+                           VerticalAlignment="Stretch"
+                           HorizontalAlignment="Stretch"
+                           Text="{Binding RightThumbStickX}" />
+            </Grid>
+            <Grid Margin="5"
+                  Grid.Row="1"
+                  Grid.Column="1"
+                  VerticalAlignment="Stretch"
+                  HorizontalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0"
+                           VerticalAlignment="Stretch"
+                           HorizontalAlignment="Stretch"
+                           Text="Right Thumb Stick Y-value" />
+                <TextBlock Grid.Column="1"
+                           VerticalAlignment="Stretch"
+                           HorizontalAlignment="Stretch"
+                           Text="{Binding RightThumbStickY}" />
+            </Grid>
+            <Grid Margin="5"
+                  Grid.Row="2"
+                  Grid.Column="0"
+                  VerticalAlignment="Stretch"
+                  HorizontalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0"
+                           VerticalAlignment="Stretch"
+                           HorizontalAlignment="Stretch"
+                           Text="Left Trigger Value" />
+                <TextBlock Grid.Column="1"
+                           VerticalAlignment="Stretch"
+                           HorizontalAlignment="Stretch"
+                           Text="{Binding LeftTriggerValue}" />
+            </Grid>
+            <Grid Margin="5"
+                  Grid.Row="2"
+                  Grid.Column="1"
+                  VerticalAlignment="Stretch"
+                  HorizontalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0"
+                           VerticalAlignment="Stretch"
+                           HorizontalAlignment="Stretch"
+                           Text="Right Trigger Value" />
+                <TextBlock Grid.Column="1"
+                           VerticalAlignment="Stretch"
+                           HorizontalAlignment="Stretch"
+                           Text="{Binding RightTriggerValue}" />
+            </Grid>
+        </Grid>
+        <Grid Grid.Row="2"
+              Margin="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0"
+                       FontSize="16"
+                       FontWeight="Bold"
+                       VerticalAlignment="Stretch"
+                       HorizontalAlignment="Stretch"
+                       Text="Commanded Flight Data Values:" />
+        </Grid>
+        <Grid Grid.Row="3"
+              Margin="5">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid Margin="5"
+                  Grid.Row="0"
+                  Grid.Column="0"
+                  VerticalAlignment="Stretch"
+                  HorizontalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0"
+                           VerticalAlignment="Stretch"
+                           HorizontalAlignment="Stretch"
+                           Text="Roll:" />
+                <TextBlock Grid.Column="1"
+                           VerticalAlignment="Stretch"
+                           HorizontalAlignment="Stretch"
+                           Text="{Binding CommandedRoll}" />
+            </Grid>
+            <Grid Margin="5"
+                  Grid.Row="0"
+                  Grid.Column="1"
+                  VerticalAlignment="Stretch"
+                  HorizontalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0"
+                           VerticalAlignment="Stretch"
+                           HorizontalAlignment="Stretch"
+                           Text="Pitch:" />
+                <TextBlock Grid.Column="1"
+                           VerticalAlignment="Stretch"
+                           HorizontalAlignment="Stretch"
+                           Text="{Binding CommandedPitch}" />
+            </Grid>
+            <Grid Margin="5"
+                  Grid.Row="1"
+                  Grid.Column="0"
+                  VerticalAlignment="Stretch"
+                  HorizontalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0"
+                           VerticalAlignment="Stretch"
+                           HorizontalAlignment="Stretch"
+                           Text="Yaw:" />
+                <TextBlock Grid.Column="1"
+                           VerticalAlignment="Stretch"
+                           HorizontalAlignment="Stretch"
+                           Text="{Binding CommandedYaw}" />
+            </Grid>
+            <Grid Margin="5"
+                  Grid.Row="1"
+                  Grid.Column="1"
+                  VerticalAlignment="Stretch"
+                  HorizontalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0"
+                           VerticalAlignment="Stretch"
+                           HorizontalAlignment="Stretch"
+                           Text="Throttle:" />
+                <TextBlock Grid.Column="1"
+                           VerticalAlignment="Stretch"
+                           HorizontalAlignment="Stretch"
+                           Text="{Binding CommandedThrottle}" />
+            </Grid>
+        </Grid>
+        <Grid Grid.Row="4"
+              Margin="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0"
+                       FontSize="16"
+                       FontWeight="Bold"
+                       VerticalAlignment="Stretch"
+                       HorizontalAlignment="Stretch"
+                       Text="Observed Flight Data Values:" />
+        </Grid>
+        <Grid Grid.Row="5"
+              Margin="5">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid Margin="5"
+                  Grid.Row="0"
+                  Grid.Column="0"
+                  VerticalAlignment="Stretch"
+                  HorizontalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0"
+                           VerticalAlignment="Stretch"
+                           HorizontalAlignment="Stretch"
+                           Text="Roll:" />
+                <TextBlock Grid.Column="1"
+                           VerticalAlignment="Stretch"
+                           HorizontalAlignment="Stretch"
+                           Text="{Binding ObservedRoll}" />
+            </Grid>
+            <Grid Margin="5"
+                  Grid.Row="0"
+                  Grid.Column="1"
+                  VerticalAlignment="Stretch"
+                  HorizontalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0"
+                           VerticalAlignment="Stretch"
+                           HorizontalAlignment="Stretch"
+                           Text="Pitch:" />
+                <TextBlock Grid.Column="1"
+                           VerticalAlignment="Stretch"
+                           HorizontalAlignment="Stretch"
+                           Text="{Binding ObservedPitch}" />
+            </Grid>
+            <Grid Margin="5"
+                  Grid.Row="1"
+                  Grid.Column="0"
+                  VerticalAlignment="Stretch"
+                  HorizontalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0"
+                           VerticalAlignment="Stretch"
+                           HorizontalAlignment="Stretch"
+                           Text="Yaw:" />
+                <TextBlock Grid.Column="1"
+                           VerticalAlignment="Stretch"
+                           HorizontalAlignment="Stretch"
+                           Text="{Binding ObservedYaw}" />
+            </Grid>
+            <Grid Margin="5"
+                  Grid.Row="1"
+                  Grid.Column="1"
+                  VerticalAlignment="Stretch"
+                  HorizontalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0"
+                           VerticalAlignment="Stretch"
+                           HorizontalAlignment="Stretch"
+                           Text="Throttle:" />
+                <TextBlock Grid.Column="1"
+                           VerticalAlignment="Stretch"
+                           HorizontalAlignment="Stretch"
+                           Text="{Binding ObservedThrottle}" />
+            </Grid>
+        </Grid>
+        <Grid Grid.Row="6">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <ListView Grid.Column="0"
+                      Margin="5"
+                      VerticalAlignment="Stretch"
+                      HorizontalAlignment="Stretch"
+                      ItemsSource="{Binding ReceivedCommands}"
+                      ScrollViewer.VerticalScrollBarVisibility="Auto">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0"
+                                       VerticalAlignment="Stretch"
+                                       HorizontalAlignment="Stretch"
+                                       Text="{Binding Time}" />
+                            <TextBlock Grid.Column="1"
+                                       VerticalAlignment="Stretch"
+                                       HorizontalAlignment="Stretch"
+                                       Text="{Binding Text}" />
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            <Charting:Chart Grid.Column="1"
+                            Margin="5"
+                            VerticalAlignment="Stretch"
+                            HorizontalAlignment="Stretch">
+                <Charting:Chart.Axes>
+                    <Charting:DateTimeAxis Orientation="X"
+                                           x:Name="xAxis"
+                                           Title="Time"
+                                           ShowGridLines="True" />
+                    <Charting:LinearAxis Orientation="Y"
+                                         x:Name="yAxis"
+                                         ShowGridLines="True"
+                                         Title="Normalized Value" />
+                </Charting:Chart.Axes>
+                <Charting:LineSeries Title="Observed Roll"
+                                     IsSelectionEnabled="True" 
+        		                     DependentValueBinding="{Binding Y}"
+        		                     IndependentValueBinding="{Binding X}"
+                                     ItemsSource="{Binding ObservedRollDataPoints}" />
+                <Charting:LineSeries Title="Observed Pitch"
+                                     IsSelectionEnabled="True" 
+        		                     DependentValueBinding="{Binding Y}"
+        		                     IndependentValueBinding="{Binding X}"
+                                     ItemsSource="{Binding ObservedPitchDataPoints}" />
+                <Charting:LineSeries Title="Observed Yaw"
+                                     IsSelectionEnabled="True" 
+        		                     DependentValueBinding="{Binding Y}"
+        		                     IndependentValueBinding="{Binding X}"
+                                     ItemsSource="{Binding ObservedYawDataPoints}" />
+                <Charting:LineSeries Title="Observed Throttle"
+                                     IsSelectionEnabled="True" 
+        		                     DependentValueBinding="{Binding Y}"
+        		                     IndependentValueBinding="{Binding X}"
+                                     ItemsSource="{Binding ObservedThrottleDataPoints}" />
+                <Charting:LineSeries Title="Commanded Roll"
+                                     IsSelectionEnabled="True" 
+        		                     DependentValueBinding="{Binding Y}"
+        		                     IndependentValueBinding="{Binding X}"
+                                     ItemsSource="{Binding CommandedRollDataPoints}" />
+                <Charting:LineSeries Title="Commanded Pitch"
+                                     IsSelectionEnabled="True" 
+        		                     DependentValueBinding="{Binding Y}"
+        		                     IndependentValueBinding="{Binding X}"
+                                     ItemsSource="{Binding CommandedPitchDataPoints}" />
+                <Charting:LineSeries Title="Commanded Yaw"
+                                     IsSelectionEnabled="True" 
+        		                     DependentValueBinding="{Binding Y}"
+        		                     IndependentValueBinding="{Binding X}"
+                                     ItemsSource="{Binding CommandedYawDataPoints}" />
+                <Charting:LineSeries Title="Commanded Throttle"
+                                     IsSelectionEnabled="True" 
+        		                     DependentValueBinding="{Binding Y}"
+        		                     IndependentValueBinding="{Binding X}"
+                                     ItemsSource="{Binding CommandedThrottleDataPoints}" />
+            </Charting:Chart>
+        </Grid>        
+    </Grid>
+</Page>
