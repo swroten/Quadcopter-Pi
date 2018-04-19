@@ -16,18 +16,45 @@ namespace XboxOneControllerTcpClient.ViewModel
         public MainPageViewModel()
         {
             // Set Gather Message Frequency (ms)
-            _gatherMessageFrequency = 50;
+            _maxNumberOfPoints = 600;
+            _gatherMessageFrequencyMs = 50;
             _frequencyOfChartUpdateMs = 500;
             _timeSinceLastChartUpdateMs = 0;
+            _timeSinceLastServerUpdateMs = 0;
+            _frequencyToUpdateServerWithNewFlighDataMs = 250;
 
             // Create Flight Data
             _flightData = new FlightData();
+
+            // Create Rest Client
+            _myRestClient = new MyRestClient();
 
             // Start Listening
             StartListening();
         }
 
         #region Get / Set
+
+        public FlightData FlightData
+        {
+            get
+            {
+                return _flightData;
+            }
+            set
+            {
+                _flightData = value;
+                OnPropertyChanged("FlightData");
+                OnPropertyChanged("CommandedRoll");
+                OnPropertyChanged("CommandedPitch");
+                OnPropertyChanged("CommandedYaw");
+                OnPropertyChanged("CommandedThrottle");
+                OnPropertyChanged("ObservedRoll");
+                OnPropertyChanged("ObservedPitch");
+                OnPropertyChanged("ObservedYaw");
+                OnPropertyChanged("ObservedThrottle");
+            }
+        }
 
         public double LeftThumbStickX
         {
@@ -278,7 +305,7 @@ namespace XboxOneControllerTcpClient.ViewModel
                     }
 
                     // New Messages Scanned for Every 
-                    await Task.Delay(_gatherMessageFrequency);
+                    await Task.Delay(_gatherMessageFrequencyMs);
                 }
             });
         }
@@ -315,7 +342,24 @@ namespace XboxOneControllerTcpClient.ViewModel
             CommandedPitch = RightThumbStickY;
 
             // Accumulate time
-            _timeSinceLastChartUpdateMs += _gatherMessageFrequency;
+            _timeSinceLastChartUpdateMs += _gatherMessageFrequencyMs;
+            _timeSinceLastServerUpdateMs += _gatherMessageFrequencyMs;
+
+            // Check if enough time has accumulated to post new data to Data Server
+            if (_timeSinceLastServerUpdateMs > _frequencyToUpdateServerWithNewFlighDataMs)
+            {
+                // Reset Gather Time
+                _timeSinceLastServerUpdateMs = 0;
+                
+                // Update Flight Data
+                FlightData = _myRestClient.Update(_flightData).Result;
+
+                // Test
+                //ObservedPitch = FlightData.CommandedPitch;
+                //ObservedRoll = FlightData.CommandedRoll;
+                //ObservedThrottle = FlightData.CommandedThrottle;
+                //ObservedYaw = FlightData.CommandedYaw;
+            }
 
             // Check if enough time has accumlated to post a new data point to chart
             if (_timeSinceLastChartUpdateMs > _frequencyOfChartUpdateMs)
@@ -324,10 +368,32 @@ namespace XboxOneControllerTcpClient.ViewModel
                 _timeSinceLastChartUpdateMs = 0;
 
                 // Add Data Points
+                if (CommandedYawDataPoints.Count > _maxNumberOfPoints)
+                {
+                    // Remove First Commanded
+                    CommandedYawDataPoints.RemoveAt(0);
+                    CommandedThrottleDataPoints.RemoveAt(0);
+                    CommandedRollDataPoints.RemoveAt(0);
+                    CommandedPitchDataPoints.RemoveAt(0);
+
+                    // Remove First Observed
+                    ObservedYawDataPoints.RemoveAt(0);
+                    ObservedThrottleDataPoints.RemoveAt(0);
+                    ObservedRollDataPoints.RemoveAt(0);
+                    ObservedPitchDataPoints.RemoveAt(0);
+                }
+
+                // Add New Commanded
                 CommandedYawDataPoints.Add(new DataPoint() { Y = CommandedYaw });
                 CommandedThrottleDataPoints.Add(new DataPoint() { Y = CommandedThrottle });
                 CommandedRollDataPoints.Add(new DataPoint() { Y = CommandedRoll });
                 CommandedPitchDataPoints.Add(new DataPoint() { Y = CommandedPitch });
+
+                // Add New Observed
+                ObservedYawDataPoints.Add(new DataPoint() { Y = ObservedYaw });
+                ObservedThrottleDataPoints.Add(new DataPoint() { Y = ObservedThrottle });
+                ObservedRollDataPoints.Add(new DataPoint() { Y = ObservedRoll });
+                ObservedPitchDataPoints.Add(new DataPoint() { Y = ObservedPitch });
             }
         }
         
@@ -352,6 +418,7 @@ namespace XboxOneControllerTcpClient.ViewModel
 
         private bool _isRunning;
         private Gamepad _controller;
+        private int _maxNumberOfPoints;
         private FlightData _flightData;
         private double _leftThumbStickX;
         private double _leftThumbStickY;
@@ -359,9 +426,12 @@ namespace XboxOneControllerTcpClient.ViewModel
         private double _rightThumbStickY;
         private double _leftTriggerValue;
         private double _rightTriggerValue;
-        private int _gatherMessageFrequency;
+        private MyRestClient _myRestClient;
+        private int _gatherMessageFrequencyMs;
         private int _frequencyOfChartUpdateMs;
         private int _timeSinceLastChartUpdateMs;
+        private int _timeSinceLastServerUpdateMs;
+        private int _frequencyToUpdateServerWithNewFlighDataMs;
 
     }
 }

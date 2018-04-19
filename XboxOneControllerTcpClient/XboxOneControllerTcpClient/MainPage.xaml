@@ -341,37 +341,7 @@
             </Grid>
         </Grid>
         <Grid Grid.Row="6">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <ListView Grid.Column="0"
-                      Margin="5"
-                      VerticalAlignment="Stretch"
-                      HorizontalAlignment="Stretch"
-                      ItemsSource="{Binding ReceivedCommands}"
-                      ScrollViewer.VerticalScrollBarVisibility="Auto">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Column="0"
-                                       VerticalAlignment="Stretch"
-                                       HorizontalAlignment="Stretch"
-                                       Text="{Binding Time}" />
-                            <TextBlock Grid.Column="1"
-                                       VerticalAlignment="Stretch"
-                                       HorizontalAlignment="Stretch"
-                                       Text="{Binding Text}" />
-                        </Grid>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
-            <Charting:Chart Grid.Column="1"
-                            Margin="5"
+            <Charting:Chart Margin="5"
                             VerticalAlignment="Stretch"
                             HorizontalAlignment="Stretch">
                 <Charting:Chart.Axes>
