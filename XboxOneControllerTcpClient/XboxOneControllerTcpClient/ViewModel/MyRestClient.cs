@@ -24,33 +24,30 @@ namespace XboxOneControllerTcpClient.ViewModel
                 Convert.ToBase64String(Encoding.ASCII.GetBytes("pi:raspberry")));
         }
 
-        public async Task<FlightData> Update(FlightData flightData)
+        public async Task<Observed> Update(Observed observedData, Commanded commandedData)
         {
-            return await UpdateFlightData(flightData).ConfigureAwait(false);
+            return await UpdateFlightData(observedData, commandedData).ConfigureAwait(false);
         }
 
-        private async Task<FlightData> UpdateFlightData(FlightData flightData)
+        private async Task<Observed> UpdateFlightData(Observed observedData, Commanded commandedData)
         {
-            // Set to itself for initialization
-            FlightData newFlightData;
-            FlightData responseFlightData = flightData;
+            // Initialize Variables
+            Observed observedDataServerResponse = observedData;
+            Commanded commandedDataServerResponse = commandedData;
 
             try
             {
-                // Get New Flight Data from Server
-                newFlightData = await GetFlightDataAsync($"/flightdata").ConfigureAwait(false);
+                // Get New Observed Flight Data from Server
+                observedDataServerResponse = await GetObservedDataAsync($"/observed").ConfigureAwait(false);
 
                 // Update Current Flight Data
-                flightData.ObservedYaw = newFlightData.ObservedYaw;
-                flightData.ObservedRoll = newFlightData.ObservedRoll;
-                flightData.ObservedPitch = newFlightData.ObservedPitch;
-                flightData.ObservedThrottle = newFlightData.ObservedThrottle;
+                observedData.Yaw = observedDataServerResponse.Yaw;
+                observedData.Roll = observedDataServerResponse.Roll;
+                observedData.Pitch = observedDataServerResponse.Pitch;
+                observedData.Throttle = observedDataServerResponse.Throttle;
 
-                // Display Flight Data on console for debugging
-                ShowFlightData(flightData);
-
-                // Update Server Flight Data with Demanded Values
-                //responseFlightData = await UpdateFlightDataAsync(flightData).ConfigureAwait(false);
+                // Update Server with Commanded Flight Data
+                commandedDataServerResponse = await UpdateFlightDataAsync(commandedData).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -58,13 +55,13 @@ namespace XboxOneControllerTcpClient.ViewModel
             }
 
             // return final response
-            return responseFlightData;
+            return observedDataServerResponse;
         }
 
-        private async Task<FlightData> GetFlightDataAsync(string path)
+        private async Task<Observed> GetObservedDataAsync(string path)
         {
             string flightDataAsString;
-            FlightData flightData = null;
+            Observed flightData = null;
             HttpResponseMessage response = await _client.GetAsync(path).ConfigureAwait(false);
             if (response.IsSuccessStatusCode)
             {
@@ -72,33 +69,27 @@ namespace XboxOneControllerTcpClient.ViewModel
                 flightDataAsString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
                 // Deserialize
-                flightData = JsonConvert.DeserializeObject<FlightData>(flightDataAsString);
+                flightData = JsonConvert.DeserializeObject<Observed>(flightDataAsString);
             }
             return flightData;
         }
 
-        private async Task<FlightData> UpdateFlightDataAsync(FlightData flightData)
+        private async Task<Commanded> UpdateFlightDataAsync(Commanded commandedData)
         {
             string flightDataAsString;
-            HttpResponseMessage response = await _client.PutAsJsonAsync($"/flightdata", flightData).ConfigureAwait(false);
+            HttpResponseMessage response = await _client.PutAsJsonAsync($"/commands/{commandedData.Id}", commandedData).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
 
             // Get Flight Data as string
             flightDataAsString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             // Deserialize
-            flightData = JsonConvert.DeserializeObject<FlightData>(flightDataAsString);
+            commandedData = JsonConvert.DeserializeObject<Commanded>(flightDataAsString);
 
             // Return FlightData
-            return flightData;
+            return commandedData;
         }
-
-        private void ShowFlightData(FlightData flightData)
-        {
-            Console.WriteLine(JsonConvert.SerializeObject(flightData, Formatting.Indented));
-        }
-
-
+        
         private HttpClient _client;
     }
 }
