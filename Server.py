@@ -20,10 +20,10 @@ commands = {
 
 observed = {
     'Id': 0,
-    'Roll': -1.0,
-    'Pitch': 0.543,
-    'Yaw': 0.987,
-    'Throttle': 0.123
+    'Roll': 0.0,
+    'Pitch': 0.0,
+    'Yaw': 0.0,
+    'Throttle': 0.0
 }
 
 # Throttle will be calculated later from feedback of the Engines
