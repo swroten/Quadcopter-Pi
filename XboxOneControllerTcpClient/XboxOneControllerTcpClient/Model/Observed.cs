@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,27 +16,17 @@ namespace XboxOneControllerTcpClient.Model
 
         #region Get / Set
 
-        public int Id
-        {
-            get
-            {
-                return _id;
-            }
-            set
-            {
-                _id = value;
-            }
-        }
+        public int Id { get; set; } = 0;
 
         public double Roll
         {
             get
             {
-                return _roll;
+                return ScaleRoll(RawRoll);
             }
             set
             {
-                _roll = ScaleAngle(value);
+                RawRoll = value;
             }
         }
 
@@ -43,11 +34,11 @@ namespace XboxOneControllerTcpClient.Model
         {
             get
             {
-                return _pitch;
+                return ScalePitch(RawPitch);
             }
             set
             {
-                _pitch = ScaleAngle(value);
+                RawPitch = value;
             }
         }
 
@@ -55,11 +46,11 @@ namespace XboxOneControllerTcpClient.Model
         {
             get
             {
-                return _yaw;
+                return ScaleYaw(RawYaw);
             }
             set
             {
-                _yaw = ScaleAngle(value);
+                RawYaw = value;
             }
         }
 
@@ -67,22 +58,46 @@ namespace XboxOneControllerTcpClient.Model
         {
             get
             {
-                return _throttle;
+                // Scale between -1 and 1 to prevent garbage data transmission
+                return Math.Min(1.0, Math.Max(-1.0, RawThrottle));
             }
             set
             {
-                // Scale between -1 and 1 to prevent garbage data transmission
-                _throttle = Math.Min(1.0, Math.Max(-1.0, value));
+                RawThrottle = value;
             }
         }
+
+        [JsonIgnore]
+        public double RawRoll { get; private set; } = 0.0;
+
+        [JsonIgnore]
+        public double RawPitch { get; private set; } = 0.0;
+
+        [JsonIgnore]
+        public double RawYaw { get; private set; } = 0.0;
+
+        [JsonIgnore]
+        public double RawThrottle { get; private set; } = 0.0;
 
         #endregion
 
         #region Business Logic
 
-        private static double ScaleAngle(double angle)
+        private static double ScaleYaw(double angle)
         {
-            return Math.Min(1.0, Math.Max(-1.0, Scale(angle, 0.0, 360.0, -1.0, 1.0)));
+            return Math.Min(1.0, Math.Max(-1.0, (((angle > 0) && (angle <= 180)) ?
+                Scale(angle, 0.0, 180.0, 0, 1.0) :
+                Scale(angle, 180.0, 360.0, -1.0, 0))));
+        }
+
+        private static double ScaleRoll(double angle)
+        {
+            return Scale(angle, -90.0, 90.0, -1.0, 1.0);
+        }
+
+        private static double ScalePitch(double angle)
+        {
+            return Scale(angle, -180.0, 180.0, -1.0, 1.0);
         }
 
         private static double Scale(double valueIn, double baseMin, double baseMax, double limitMin, double limitMax)
@@ -91,12 +106,5 @@ namespace XboxOneControllerTcpClient.Model
         }
 
         #endregion
-
-        private int _id = 0;
-        private double _roll = 0.0;
-        private double _pitch = 0.0;
-        private double _yaw = 0.0;
-        private double _throttle = 0.0;
-
     }
 }

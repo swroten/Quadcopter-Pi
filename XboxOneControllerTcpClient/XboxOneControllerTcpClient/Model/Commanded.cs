@@ -80,7 +80,7 @@ namespace XboxOneControllerTcpClient.Model
         }
 
         #endregion
-
+        
         private int _id = 0;
         private double _roll = 0.0;
         private double _pitch = 0.0;

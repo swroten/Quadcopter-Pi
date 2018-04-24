@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Gaming.Input;
+using Windows.Storage;
 using Windows.UI.Core;
 using XboxOneControllerTcpClient.Model;
 
@@ -46,11 +48,15 @@ namespace XboxOneControllerTcpClient.ViewModel
             set
             {
                 _observedData = value;
-                OnPropertyChanged("ObservedData");;
+                OnPropertyChanged("ObservedData");
                 OnPropertyChanged("ObservedRoll");
                 OnPropertyChanged("ObservedPitch");
                 OnPropertyChanged("ObservedYaw");
                 OnPropertyChanged("ObservedThrottle");
+                OnPropertyChanged("RawRoll");
+                OnPropertyChanged("RawPitch");
+                OnPropertyChanged("RawYaw");
+                OnPropertyChanged("RawThrottle");
             }
         }
 
@@ -252,7 +258,39 @@ namespace XboxOneControllerTcpClient.ViewModel
                 OnPropertyChanged("ObservedThrottle");
             }
         }
+        
+        public double RawRoll
+        {
+            get
+            {
+                return _observedData.RawRoll;
+            }
+        }
 
+        public double RawPitch
+        {
+            get
+            {
+                return _observedData.RawPitch;
+            }
+        }
+
+        public double RawYaw
+        {
+            get
+            {
+                return _observedData.RawYaw;
+            }
+        }
+
+        public double RawThrottle
+        {
+            get
+            {
+                return _observedData.RawThrottle;
+            }
+        }
+        
         public ObservableCollection<DataPoint> ObservedRollDataPoints { get; } = new ObservableCollection<DataPoint>();
 
         public ObservableCollection<DataPoint> ObservedPitchDataPoints { get; } = new ObservableCollection<DataPoint>();
@@ -369,14 +407,11 @@ namespace XboxOneControllerTcpClient.ViewModel
                 ObservedThrottleDataPoints.Clear();
             }
 
-            // Use View Button to Tare all Values
-            if (reading.Buttons.HasFlag(GamepadButtons.View))
+            // Use View Button Print all Recorded values to CSV File
+            if (reading.Buttons.HasFlag(GamepadButtons.View) && (!_isPrinting))
             {
-                // Get Tare Values
-                _tareLeftThumbStickX = LeftThumbStickX;
-                _tareLeftThumbStickY = LeftThumbStickY;
-                _tareRightThumbStickX = RightThumbStickX;
-                _tareRightThumbStickY = RightThumbStickY;
+                // Print data
+                PrintData();
             }
 
             // Update Commanded Flight Data
@@ -438,6 +473,41 @@ namespace XboxOneControllerTcpClient.ViewModel
             }
         }
         
+        private async void PrintData()
+        {
+            // Set True
+            _isPrinting = true;
+
+            try
+            {
+                // Create CSV String of Yaw Readings
+                string yawReadingResults = string.Join(System.Environment.NewLine, ObservedYawDataPoints.Select(s => $"{s.X},{s.Y}")?.ToList() ?? new List<string>());
+                string rollReadingResults = string.Join(System.Environment.NewLine, ObservedRollDataPoints.Select(s => $"{s.X},{s.Y}")?.ToList() ?? new List<string>());
+                string pitchReadingResults = string.Join(System.Environment.NewLine, ObservedPitchDataPoints.Select(s => $"{s.X},{s.Y}")?.ToList() ?? new List<string>());
+
+                // Get File Path
+                StorageFolder storageFolder = ApplicationData.Current.LocalFolder;
+                StorageFile yawFilePath = await storageFolder.CreateFileAsync($"yaw_{DateTime.Now.ToString("yyyyMMddHHmmss")}.csv",
+                        CreationCollisionOption.ReplaceExisting);
+                StorageFile rollFilePath = await storageFolder.CreateFileAsync($"roll_{DateTime.Now.ToString("yyyyMMddHHmmss")}.csv",
+                        CreationCollisionOption.ReplaceExisting);
+                StorageFile pitchFilePath = await storageFolder.CreateFileAsync($"pitch_{DateTime.Now.ToString("yyyyMMddHHmmss")}.csv",
+                        CreationCollisionOption.ReplaceExisting);
+                
+                // Write all Data to CSV File
+                await FileIO.WriteTextAsync(yawFilePath, yawReadingResults);
+                await FileIO.WriteTextAsync(rollFilePath, rollReadingResults);
+                await FileIO.WriteTextAsync(pitchFilePath, pitchReadingResults);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to Print beause of '{ex.Message}'");
+            }
+
+            // Clear Printing Data Flag
+            _isPrinting = false;
+        }
+
         private async Task DispatchCommand(DispatchedHandler handler)
         {
             await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, handler);
@@ -458,6 +528,7 @@ namespace XboxOneControllerTcpClient.ViewModel
         public event PropertyChangedEventHandler PropertyChanged;
 
         private bool _isRunning;
+        private bool _isPrinting;
         private Gamepad _controller;
         private int _maxNumberOfPoints;
         private Observed _observedData;
