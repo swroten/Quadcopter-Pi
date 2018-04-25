@@ -50,11 +50,48 @@ class IMU:
         # Read the calibration status, 0=uncalibrated and 3=fully calibrated.
         sys, self.gyro, self.accel, self.mag = self.bno.get_calibration_status()
         
-    def PrintIMUValues(self):
-        print("Roll,Pitch,Yaw")
-        while True:
-            print('{0},{1},{2}'.format(self.roll, self.pitch, self.heading))            
-    
-    def ReadIMUValues(self):
+    def update(self):
         # Read the Euler angles for heading, roll, pitch (all in degrees).
         self.heading, self.roll, self.pitch = self.bno.read_euler()
+
+    def get_raw_roll(self):
+        return self.roll
+
+    def get_raw_pitch(self):
+        return self.pitch
+
+    def get_raw_yaw(self):
+        return self.heading
+
+    def get_scaled_roll(self):
+        # Initialize Scaled Roll
+        scaled_roll = scale(self.roll, -90.0, 90.0, -1.0, 1.0)
+
+        # return a value between -1.0 and 1.0
+        return min(1.0, max(-1.0, scaled_roll))
+
+    def get_scaled_pitch(self):
+        # Initialize Scaled Pitch
+        scaled_pitch = scale(self.roll, -180.0, 180.0, -1.0, 1.0)
+
+        # return a value between -1.0 and 1.0
+        return min(1.0, max(-1.0, scaled_pitch))
+
+    def get_scaled_yaw(self):
+        # Initialize Scaled Yaw
+        scaled_yaw = 0.0
+
+        # if between 0 and 180 degrees
+        if ((self.heading > 0.0) and (self.heading <= 180.0)):
+            scaled_yaw = scale(self.heading, 0.0, 180.0, 0.0, 1.0)
+        # otherwise it is between 180 and 360 degrees
+        else:
+            scaled_yaw = scale(self.heading, 180.0, 360.0, -1.0, 0.0)
+
+        # return a value between -1.0 and 1.0
+        return min(1.0, max(-1.0, scaled_yaw))
+    
+    #Scale Specified Value 
+    def scale(self, valueIn, baseMin, baseMax, limitMin, limitMax):
+        # return Scaled Value
+        return (limitMin + (((valueIn - baseMin) * (limitMax - limitMin)) / (baseMax - baseMin)))

@@ -36,44 +36,12 @@
     <Compile Include="QuadcopterWebServer\Server.py" />
     <Compile Include="runserver.py" />
     <Compile Include="QuadcopterWebServer\__init__.py" />
-    <Compile Include="QuadcopterWebServer\views.py" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="QuadcopterWebServer\" />
-    <Folder Include="QuadcopterWebServer\static\" />
-    <Folder Include="QuadcopterWebServer\static\content\" />
-    <Folder Include="QuadcopterWebServer\static\fonts\" />
-    <Folder Include="QuadcopterWebServer\static\scripts\" />
-    <Folder Include="QuadcopterWebServer\templates\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="requirements.txt" />
-    <Content Include="QuadcopterWebServer\static\content\bootstrap.css" />
-    <Content Include="QuadcopterWebServer\static\content\bootstrap.min.css" />
-    <Content Include="QuadcopterWebServer\static\content\site.css" />
-    <Content Include="QuadcopterWebServer\static\fonts\glyphicons-halflings-regular.eot" />
-    <Content Include="QuadcopterWebServer\static\fonts\glyphicons-halflings-regular.svg" />
-    <Content Include="QuadcopterWebServer\static\fonts\glyphicons-halflings-regular.ttf" />
-    <Content Include="QuadcopterWebServer\static\fonts\glyphicons-halflings-regular.woff" />
-    <Content Include="QuadcopterWebServer\static\scripts\bootstrap.js" />
-    <Content Include="QuadcopterWebServer\static\scripts\bootstrap.min.js" />
-    <Content Include="QuadcopterWebServer\static\scripts\jquery-1.10.2.intellisense.js" />
-    <Content Include="QuadcopterWebServer\static\scripts\jquery-1.10.2.js" />
-    <Content Include="QuadcopterWebServer\static\scripts\jquery-1.10.2.min.js" />
-    <Content Include="QuadcopterWebServer\static\scripts\jquery-1.10.2.min.map" />
-    <Content Include="QuadcopterWebServer\static\scripts\jquery.validate-vsdoc.js" />
-    <Content Include="QuadcopterWebServer\static\scripts\jquery.validate.js" />
-    <Content Include="QuadcopterWebServer\static\scripts\jquery.validate.min.js" />
-    <Content Include="QuadcopterWebServer\static\scripts\jquery.validate.unobtrusive.js" />
-    <Content Include="QuadcopterWebServer\static\scripts\jquery.validate.unobtrusive.min.js" />
-    <Content Include="QuadcopterWebServer\static\scripts\modernizr-2.6.2.js" />
-    <Content Include="QuadcopterWebServer\static\scripts\respond.js" />
-    <Content Include="QuadcopterWebServer\static\scripts\respond.min.js" />
-    <Content Include="QuadcopterWebServer\static\scripts\_references.js" />
-    <Content Include="QuadcopterWebServer\templates\about.html" />
-    <Content Include="QuadcopterWebServer\templates\contact.html" />
-    <Content Include="QuadcopterWebServer\templates\index.html" />
-    <Content Include="QuadcopterWebServer\templates\layout.html" />
   </ItemGroup>
   <ItemGroup>
     <Interpreter Include="env\">

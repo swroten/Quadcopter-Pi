@@ -259,38 +259,6 @@ namespace XboxOneControllerTcpClient.ViewModel
             }
         }
         
-        public double RawRoll
-        {
-            get
-            {
-                return _observedData.RawRoll;
-            }
-        }
-
-        public double RawPitch
-        {
-            get
-            {
-                return _observedData.RawPitch;
-            }
-        }
-
-        public double RawYaw
-        {
-            get
-            {
-                return _observedData.RawYaw;
-            }
-        }
-
-        public double RawThrottle
-        {
-            get
-            {
-                return _observedData.RawThrottle;
-            }
-        }
-        
         public ObservableCollection<DataPoint> ObservedRollDataPoints { get; } = new ObservableCollection<DataPoint>();
 
         public ObservableCollection<DataPoint> ObservedPitchDataPoints { get; } = new ObservableCollection<DataPoint>();

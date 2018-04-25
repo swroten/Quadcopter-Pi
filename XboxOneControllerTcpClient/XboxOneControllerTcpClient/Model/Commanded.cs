@@ -15,17 +15,9 @@ namespace XboxOneControllerTcpClient.Model
 
         #region Get / Set
 
-        public int Id
-        {
-            get
-            {
-                return _id;
-            }
-            set
-            {
-                _id = value;
-            }
-        }
+        public int Id { get; set; } = 0;
+
+        public bool Exit { get; set; } = false;
 
         public double Roll
         {
@@ -80,8 +72,6 @@ namespace XboxOneControllerTcpClient.Model
         }
 
         #endregion
-        
-        private int _id = 0;
         private double _roll = 0.0;
         private double _pitch = 0.0;
         private double _yaw = 0.0;

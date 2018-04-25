@@ -7,6 +7,9 @@ import Server
 import FlightControl
 import PID
 
+# Create IMU Class
+imu = IMU.IMU()
+
 # Create GPS Class
 gps = GPS.GPS()
 
@@ -19,6 +22,9 @@ pitchPID = PID.PID(1, 1, 1, 0, 1000)
 yawPID = PID.PID(1, 1, 1, 0, 1000)
 thrustPID = PID.PID(1, 0, 0, 0, 1000)
 
+# Create bool for continuing to run
+running = True
+
 # Create Server
 from Server.flask import *
 
@@ -26,16 +32,36 @@ from Server.flask import *
 app.run()
 
 # Run Forever
-while True:
-    # Get Observed and Commanded Values
+while running:
+    # Update Current Observed Values
+    imu.update()
+
+    # Get Observed Values    
+    oRoll = imu.get_scaled_roll()
+    oPitch = imu.get_scaled_pitch()
+    oYaw = imu.get_scaled_yaw()
+    oThrust = quad.get_scaled_throttle()
+
+    # Update Observed Values in Server
+    Server.observed['Roll'] = oRoll
+    Server.observed['Pitch'] = oPitch
+    Server.observed['Yaw'] = oYaw
+    Server.observed['Throttle'] = oThrust
+
+    # Get Commanded Values
     cRoll = Server.commands['Roll']
     cPitch = Server.commands['Pitch']
     cYaw = Server.commands['Yaw']
-
-
+    cThrust = Server.commands['Throttle']
+    
     # Update all of the PID Loops
-    rollPID.update()
+    rollOutput = rollPID.update(cRoll, oRoll)
+    pitchOutput = pitchPID.update(cPitch, oPitch)
+    yawOutput = yawPID.update(cYaw, oYaw)
+    thrustOutput = thrustPID.update(cThrust, oThrust)
 
+    # Check if User Demanded to Stop Running
+    running = (not Server.commands['Exit'])
 
 # Stop Server
 app.stop()

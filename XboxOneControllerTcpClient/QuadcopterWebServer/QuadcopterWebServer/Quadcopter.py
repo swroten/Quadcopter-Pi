@@ -5,6 +5,7 @@ import sys
 import time
 import os
 import serial
+import math
 
 #Launching GPIO library
 os.system ("sudo pigpiod")
@@ -38,6 +39,10 @@ class Quadcopter:
         self.MinimumRPM = 0
         self.MaximumRPM = 6300
 
+        # Set Min & Max Thrust
+        self.MinimumThrust = 0.0
+        self.MaximumThrust = (0.000000124736 * self.MaximumRPM * self.MaximumRPM)
+
         # Set the Calibrated Motor PulseWidth Minimum
         self.FrontRightMinimumPulseWidth = 1230
         self.FrontLeftMinimumPulseWidth = 1265
@@ -70,6 +75,38 @@ class Quadcopter:
         self.BackRightScaledPulseWidth = 0
         self.BackLeftScaledPulseWidth = 0
 
+    # Get Observed Raw Throttle
+    def get_raw_throttle(self):
+        return compute_resultant_vector()
+
+    # Get Observed Scaled Throttle
+    def get_scaled_throttle(self):
+        return scale(compute_resultant_vector(), self.MinimumThrust, self.MaximumThrust, self.MinimumSignal, self.MaximumSignal)
+
+    # Compute Resultant Vector for all motors
+    def compute_resultant_vector(self):
+        # Get RPM for each Motor
+        front_left_rpm = scale(self.FrontLeftScaledPulseWidth, self.MinimumSignal, self.MaximumSignal, self.MinimumRPM, self.MaximumRPM)
+        front_right_rpm = scale(self.FrontRightScaledPulseWidth, self.MinimumSignal, self.MaximumSignal, self.MinimumRPM, self.MaximumRPM)
+        back_left_rpm = scale(self.BackLeftScaledPulseWidth, self.MinimumSignal, self.MaximumSignal, self.MinimumRPM, self.MaximumRPM)
+        back_right_rpm = scale(self.BackRightScaledPulseWidth, self.MinimumSignal, self.MaximumSignal, self.MinimumRPM, self.MaximumRPM)
+
+        # Get Thrust for each Motor
+        front_left_thrust = compute_motor_thrust(front_left_rpm)
+        front_right_thrust = compute_motor_thrust(front_right_rpm)
+        back_left_thrust = compute_motor_thrust(back_left_rpm)
+        back_right_thrust = compute_motor_thrust(back_right_rpm)
+
+        # Get the resultant vector
+        return math.sqrt((front_left_thrust * front_left_thrust) +
+                         (front_right_thrust * front_right_thrust) + 
+                         (back_left_thrust * back_left_thrust) + 
+                         (back_right_thrust * back_right_thrust))
+
+    # Compute Static Thrust of a particular motor
+    def compute_motor_thrust(self, rpm):
+        return (0.000000124736 * rpm * rpm)
+
     #This will stop every action your Pi is performing for ESC of course.        
     def stop(self): 
         pi.set_servo_pulsewidth(self.FrontRight, 0)
@@ -86,40 +123,46 @@ class Quadcopter:
     # Step Motors 
     def step_motors(self, front_left_setpoint, front_right_setpoint, back_left_setpoint, back_right_setpoint):
         # Handle Front Left
-        self.FrontLeftScaledPulseWidth = step_motor(front_left_setpoint, self.FrontLeftScaledPulseWidth)
-        self.FrontLeftPulseWidth = scale(self.FrontLeftScaledPulseWidth, 
-                                         self.MinimumSignal, 
-                                         self.MaximumSignal, 
-                                         self.FrontLeftMinimumPulseWidth,
-                                         self.FrontLeftMaximumPulseWidth)
-        pi.set_servo_pulsewidth(self.FrontLeft, self.FrontLeftPulseWidth)
+        self.FrontLeftScaledPulseWidth = step_motor(front_left_setpoint, self.FrontLeftScaledPulseWidth, self.StepRate)
+        self.FrontLeftPulseWidth = scale(self.FrontLeftScaledPulseWidth, self.MinimumSignal, self.MaximumSignal, self.FrontLeftMinimumPulseWidth, self.FrontLeftMaximumPulseWidth)
+        #pi.set_servo_pulsewidth(self.FrontLeft, self.FrontLeftPulseWidth)
+        print("Front Left Pulse Width: ", self.FrontLeftScaledPulseWidth)
 
         # Handle Front Right
-        step_motor(front_right_setpoint, self.FrontRightPulseWidth)
+        self.FrontRightScaledPulseWidth = step_motor(front_right_setpoint, self.FrontRightPulseWidth)
+        self.FrontRightPulseWidth = scale(self.FrontRightScaledPulseWidth, self.MinimumSignal, self.MaximumSignal, self.FrontRightMinimumPulseWidth, self.FrontRightMaximumPulseWidth)
+        #pi.set_servo_pulsewidth(self.FrontRight, self.FrontRightPulseWidth)
+        print("Front Right Pulse Width: ", self.FrontRightScaledPulseWidth)
         
         # Handle Back Left
-        step_motor(back_left_setpoint, self.BackLeftPulseWidth)
+        self.BackLeftScaledPulseWidth = step_motor(back_left_setpoint, self.BackLeftPulseWidth)
+        self.BackLeftPulseWidth = scale(self.BackLeftScaledPulseWidth, self.MinimumSignal, self.MaximumSignal, self.BackLeftMinimumPulseWidth, self.BackLeftMaximumPulseWidth)
+        #pi.set_servo_pulsewidth(self.BackLeft, self.BackLeftPulseWidth)
+        print("Back Left Pulse Width: ", self.BackLeftScaledPulseWidth)
         
         # Handle Back Right
-        step_motor(back_right_setpoint, self.BackRightPulseWidth)
+        self.BackRightScaledPulseWidth = step_motor(back_right_setpoint, self.BackRightPulseWidth)
+        self.BackRightPulseWidth = scale(self.BackRightScaledPulseWidth, self.MinimumSignal, self.MaximumSignal, self.BackRightMinimumPulseWidth, self.BackRightMaximumPulseWidth)
+        #pi.set_servo_pulsewidth(self.BackRight, self.BackRightPulseWidth)
+        print("Back Right Pulse Width: ", self.BackRightScaledPulseWidth)
     
     # Step Individual Motor
-    def step_motor(self, setpoint, current): 
+    def step_motor(self, setpoint, current, step): 
         # Create local variable for new current value
         newCurrent = current
 
         # if within one step...
-        if (abs(newCurrent - front_left_setpoint) < self.StepRate):
+        if (abs(newCurrent - setpoint) < step):
             # set current to setpoint
-            newCurrent = front_left_setpoint
+            newCurrent = setpoint
         # else if greater than demanded setpoint
-        elif (newCurrent > front_left_setpoint):
+        elif (newCurrent > setpoint):
             # decrease current pulse width
-            newCurrent -= self.StepRate
+            newCurrent -= step
         # otherwise
         else:
             # increase current pulse width
-            newCurrent += self.StepRate
+            newCurrent += step
 
         # return newly calculated
         return newCurrent
