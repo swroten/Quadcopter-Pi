@@ -5,16 +5,21 @@ VisualStudioVersion = 15.0.27428.2037
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XboxOneControllerTcpClient", "XboxOneControllerTcpClient\XboxOneControllerTcpClient.csproj", "{63470AA9-8F36-4E78-9260-F2429249A284}"
 EndProject
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "QuadcopterWebServer", "QuadcopterWebServer\QuadcopterWebServer.pyproj", "{EA784E41-3BC8-4659-A559-6695995806BE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
 		Debug|ARM = Debug|ARM
 		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
 		Release|ARM = Release|ARM
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{63470AA9-8F36-4E78-9260-F2429249A284}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{63470AA9-8F36-4E78-9260-F2429249A284}.Debug|ARM.ActiveCfg = Debug|ARM
 		{63470AA9-8F36-4E78-9260-F2429249A284}.Debug|ARM.Build.0 = Debug|ARM
 		{63470AA9-8F36-4E78-9260-F2429249A284}.Debug|ARM.Deploy.0 = Debug|ARM
@@ -24,6 +29,7 @@ Global
 		{63470AA9-8F36-4E78-9260-F2429249A284}.Debug|x86.ActiveCfg = Debug|x86
 		{63470AA9-8F36-4E78-9260-F2429249A284}.Debug|x86.Build.0 = Debug|x86
 		{63470AA9-8F36-4E78-9260-F2429249A284}.Debug|x86.Deploy.0 = Debug|x86
+		{63470AA9-8F36-4E78-9260-F2429249A284}.Release|Any CPU.ActiveCfg = Release|x86
 		{63470AA9-8F36-4E78-9260-F2429249A284}.Release|ARM.ActiveCfg = Release|ARM
 		{63470AA9-8F36-4E78-9260-F2429249A284}.Release|ARM.Build.0 = Release|ARM
 		{63470AA9-8F36-4E78-9260-F2429249A284}.Release|ARM.Deploy.0 = Release|ARM
@@ -33,6 +39,22 @@ Global
 		{63470AA9-8F36-4E78-9260-F2429249A284}.Release|x86.ActiveCfg = Release|x86
 		{63470AA9-8F36-4E78-9260-F2429249A284}.Release|x86.Build.0 = Release|x86
 		{63470AA9-8F36-4E78-9260-F2429249A284}.Release|x86.Deploy.0 = Release|x86
+		{EA784E41-3BC8-4659-A559-6695995806BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA784E41-3BC8-4659-A559-6695995806BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA784E41-3BC8-4659-A559-6695995806BE}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{EA784E41-3BC8-4659-A559-6695995806BE}.Debug|ARM.Build.0 = Debug|Any CPU
+		{EA784E41-3BC8-4659-A559-6695995806BE}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{EA784E41-3BC8-4659-A559-6695995806BE}.Debug|x64.Build.0 = Debug|Any CPU
+		{EA784E41-3BC8-4659-A559-6695995806BE}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{EA784E41-3BC8-4659-A559-6695995806BE}.Debug|x86.Build.0 = Debug|Any CPU
+		{EA784E41-3BC8-4659-A559-6695995806BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA784E41-3BC8-4659-A559-6695995806BE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EA784E41-3BC8-4659-A559-6695995806BE}.Release|ARM.ActiveCfg = Release|Any CPU
+		{EA784E41-3BC8-4659-A559-6695995806BE}.Release|ARM.Build.0 = Release|Any CPU
+		{EA784E41-3BC8-4659-A559-6695995806BE}.Release|x64.ActiveCfg = Release|Any CPU
+		{EA784E41-3BC8-4659-A559-6695995806BE}.Release|x64.Build.0 = Release|Any CPU
+		{EA784E41-3BC8-4659-A559-6695995806BE}.Release|x86.ActiveCfg = Release|Any CPU
+		{EA784E41-3BC8-4659-A559-6695995806BE}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
