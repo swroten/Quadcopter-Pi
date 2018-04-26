@@ -11,7 +11,7 @@ import PID
 imu = IMU.IMU()
 
 # Create GPS Class
-gps = GPS.GPS()
+#gps = GPS.GPS()
 
 # Create Quadcopter
 quad = Quadcopter.Quadcopter()

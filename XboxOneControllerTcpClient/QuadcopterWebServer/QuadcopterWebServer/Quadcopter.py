@@ -145,8 +145,8 @@ class Quadcopter:
         self.BackRightPulseWidth = scale(self.BackRightScaledPulseWidth, self.MinimumSignal, self.MaximumSignal, self.BackRightMinimumPulseWidth, self.BackRightMaximumPulseWidth)
         #pi.set_servo_pulsewidth(self.BackRight, self.BackRightPulseWidth)
         print("Back Right Pulse Width: ", self.BackRightScaledPulseWidth)
-    
-    # Step Individual Motor
+
+    # Step Individual Motor    
     def step_motor(self, setpoint, current, step): 
         # Create local variable for new current value
         newCurrent = current
