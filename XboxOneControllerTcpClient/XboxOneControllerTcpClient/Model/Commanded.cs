@@ -17,6 +17,8 @@ namespace XboxOneControllerTcpClient.Model
 
         public int Id { get; set; } = 0;
 
+        public bool Armed { get; set; } = false;
+
         public bool Exit { get; set; } = false;
 
         public double Roll

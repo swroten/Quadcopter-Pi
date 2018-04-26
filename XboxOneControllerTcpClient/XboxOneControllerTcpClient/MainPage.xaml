@@ -208,7 +208,44 @@
                            Text="{Binding ObservedThrottle}" />
             </Grid>
         </Grid>
-        <Grid Grid.Row="4">
+        <Grid Grid.Row="4"
+              Margin="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0"
+                       FontSize="16"
+                       FontWeight="Bold"
+                       VerticalAlignment="Stretch"
+                       HorizontalAlignment="Stretch"
+                       Text="Flight Status:" />
+        </Grid>
+        <Grid Grid.Row="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid Margin="5"
+                  Grid.Column="0"
+                  VerticalAlignment="Stretch"
+                  HorizontalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0"
+                           VerticalAlignment="Stretch"
+                           HorizontalAlignment="Stretch"
+                           Text="Status:" />
+                <TextBlock Grid.Column="1"
+                           FontSize="14"
+                           FontWeight="Bold"
+                           VerticalAlignment="Stretch"
+                           HorizontalAlignment="Stretch"
+                           Text="{Binding IsArmedStatus}" />
+            </Grid>
+        </Grid>
+        <Grid Grid.Row="6">
             <Charting:Chart Margin="5"
                             VerticalAlignment="Stretch"
                             HorizontalAlignment="Stretch">

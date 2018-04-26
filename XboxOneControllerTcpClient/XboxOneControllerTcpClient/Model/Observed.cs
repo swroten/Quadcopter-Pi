@@ -1,11 +1,4 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace XboxOneControllerTcpClient.Model
+﻿namespace XboxOneControllerTcpClient.Model
 {
     public class Observed
     {
@@ -17,6 +10,8 @@ namespace XboxOneControllerTcpClient.Model
         #region Get / Set
 
         public int Id { get; set; } = 0;
+
+        public bool Armed { get; set; } = false;
 
         public double Roll { get; set; } = 0.0;
 

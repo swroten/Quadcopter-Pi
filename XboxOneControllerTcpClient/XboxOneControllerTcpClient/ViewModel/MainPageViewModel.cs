@@ -53,10 +53,7 @@ namespace XboxOneControllerTcpClient.ViewModel
                 OnPropertyChanged("ObservedPitch");
                 OnPropertyChanged("ObservedYaw");
                 OnPropertyChanged("ObservedThrottle");
-                OnPropertyChanged("RawRoll");
-                OnPropertyChanged("RawPitch");
-                OnPropertyChanged("RawYaw");
-                OnPropertyChanged("RawThrottle");
+                OnPropertyChanged("IsArmedStatus");
             }
         }
 
@@ -74,6 +71,8 @@ namespace XboxOneControllerTcpClient.ViewModel
                 OnPropertyChanged("CommandedPitch");
                 OnPropertyChanged("CommandedYaw");
                 OnPropertyChanged("CommandedThrottle");
+                OnPropertyChanged("ObservedArmed");
+                OnPropertyChanged("CommandedArmed");
             }
         }
 
@@ -155,6 +154,19 @@ namespace XboxOneControllerTcpClient.ViewModel
             }
         }
 
+        public bool CommandedArmed
+        {
+            get
+            {
+                return _commandedData.Armed;
+            }
+            set
+            {
+                _commandedData.Armed = value;
+                OnPropertyChanged("CommandedArmed");
+            }
+        }
+
         public double CommandedRoll
         {
             get
@@ -204,6 +216,28 @@ namespace XboxOneControllerTcpClient.ViewModel
             {
                 _commandedData.Throttle = value;
                 OnPropertyChanged("CommandedThrottle");
+            }
+        }
+
+        public string IsArmedStatus
+        {
+            get
+            {
+                return (ObservedArmed) ? "ARMED" : "OFF";
+            }
+        }
+
+        public bool ObservedArmed
+        {
+            get
+            {
+                return _observedData.Armed;
+            }
+            set
+            {
+                _observedData.Armed = value;
+                OnPropertyChanged("IsArmedStatus");
+                OnPropertyChanged("ObservedArmed");
             }
         }
 
@@ -318,7 +352,7 @@ namespace XboxOneControllerTcpClient.ViewModel
                         {
                             // Process Command
                             await DispatchCommand(() => { ProcessCommand(_controller.GetCurrentReading()); });                            
-                        }                        
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -381,6 +415,20 @@ namespace XboxOneControllerTcpClient.ViewModel
                 // Print data
                 PrintData();
             }
+            
+            // Disarm is B is Pressed and it is currently Armed
+            if (reading.Buttons.HasFlag(GamepadButtons.B) && CommandedArmed)
+            {
+                CommandedArmed = false;
+            }
+            // Otherwise arm if A is Pressed and it is not currently armed
+            else if (reading.Buttons.HasFlag(GamepadButtons.A) && !CommandedArmed)
+            {
+                CommandedArmed = true;
+            }
+
+            // Check if Exit has been Demanded
+            CommandedData.Exit = (reading.Buttons.HasFlag(GamepadButtons.Y) || (CommandedData.Exit));            
 
             // Update Commanded Flight Data
             CommandedYaw = LeftThumbStickX;
