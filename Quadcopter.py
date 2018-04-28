@@ -159,22 +159,25 @@ class Quadcopter:
         print("Front Left Pulse Width: ", self.FrontLeftScaledPulseWidth)
 
         # Handle Front Right
-        self.FrontRightScaledPulseWidth = self.step_motor(front_right_setpoint, self.FrontRightPulseWidth)
+        self.FrontRightScaledPulseWidth = self.step_motor(front_right_setpoint, self.FrontRightScaledPulseWidth)
         self.FrontRightPulseWidth = self.scale(self.FrontRightScaledPulseWidth, self.MinimumSignal, self.MaximumSignal, self.FrontRightMinimumPulseWidth, self.FrontRightMaximumPulseWidth)
         #pi.set_servo_pulsewidth(self.FrontRight, self.FrontRightPulseWidth)
         print("Front Right Pulse Width: ", self.FrontRightScaledPulseWidth)
         
         # Handle Back Left
-        self.BackLeftScaledPulseWidth = self.step_motor(back_left_setpoint, self.BackLeftPulseWidth)
+        self.BackLeftScaledPulseWidth = self.step_motor(back_left_setpoint, self.BackLeftScaledPulseWidth)
         self.BackLeftPulseWidth = self.scale(self.BackLeftScaledPulseWidth, self.MinimumSignal, self.MaximumSignal, self.BackLeftMinimumPulseWidth, self.BackLeftMaximumPulseWidth)
         #pi.set_servo_pulsewidth(self.BackLeft, self.BackLeftPulseWidth)
         print("Back Left Pulse Width: ", self.BackLeftScaledPulseWidth)
         
         # Handle Back Right
-        self.BackRightScaledPulseWidth = self.step_motor(back_right_setpoint, self.BackRightPulseWidth)
+        self.BackRightScaledPulseWidth = self.step_motor(back_right_setpoint, self.BackRightScaledPulseWidth)
         self.BackRightPulseWidth = self.scale(self.BackRightScaledPulseWidth, self.MinimumSignal, self.MaximumSignal, self.BackRightMinimumPulseWidth, self.BackRightMaximumPulseWidth)
         #pi.set_servo_pulsewidth(self.BackRight, self.BackRightPulseWidth)
         print("Back Right Pulse Width: ", self.BackRightScaledPulseWidth)
+
+    # Process Commanded States versus Observed States to Step Motors
+    #def process_flight_states(self, cRoll, oRoll, co
 
     # Arming Procedure for all ESC    
     def arm(self): 
