@@ -7,220 +7,15 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:Charting="using:WinRTXamlToolkit.Controls.DataVisualization.Charting"
     mc:Ignorable="d">
-
+    
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid Grid.Row="0"
               Margin="5">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <TextBlock Grid.Column="0"
-                       FontSize="16"
-                       FontWeight="Bold"
-                       VerticalAlignment="Stretch"
-                       HorizontalAlignment="Stretch"
-                       Text="Commanded Flight Data Values:" />
-        </Grid>
-        <Grid Grid.Row="1"
-              Margin="5">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <Grid Margin="5"
-                  Grid.Row="0"
-                  Grid.Column="0"
-                  VerticalAlignment="Stretch"
-                  HorizontalAlignment="Stretch">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0"
-                           VerticalAlignment="Stretch"
-                           HorizontalAlignment="Stretch"
-                           Text="Roll:" />
-                <TextBlock Grid.Column="1"
-                           VerticalAlignment="Stretch"
-                           HorizontalAlignment="Stretch"
-                           Text="{Binding CommandedRoll}" />
-            </Grid>
-            <Grid Margin="5"
-                  Grid.Row="0"
-                  Grid.Column="1"
-                  VerticalAlignment="Stretch"
-                  HorizontalAlignment="Stretch">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0"
-                           VerticalAlignment="Stretch"
-                           HorizontalAlignment="Stretch"
-                           Text="Pitch:" />
-                <TextBlock Grid.Column="1"
-                           VerticalAlignment="Stretch"
-                           HorizontalAlignment="Stretch"
-                           Text="{Binding CommandedPitch}" />
-            </Grid>
-            <Grid Margin="5"
-                  Grid.Row="1"
-                  Grid.Column="0"
-                  VerticalAlignment="Stretch"
-                  HorizontalAlignment="Stretch">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0"
-                           VerticalAlignment="Stretch"
-                           HorizontalAlignment="Stretch"
-                           Text="Yaw:" />
-                <TextBlock Grid.Column="1"
-                           VerticalAlignment="Stretch"
-                           HorizontalAlignment="Stretch"
-                           Text="{Binding CommandedYaw}" />
-            </Grid>
-            <Grid Margin="5"
-                  Grid.Row="1"
-                  Grid.Column="1"
-                  VerticalAlignment="Stretch"
-                  HorizontalAlignment="Stretch">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0"
-                           VerticalAlignment="Stretch"
-                           HorizontalAlignment="Stretch"
-                           Text="Throttle:" />
-                <TextBlock Grid.Column="1"
-                           VerticalAlignment="Stretch"
-                           HorizontalAlignment="Stretch"
-                           Text="{Binding CommandedThrottle}" />
-            </Grid>
-        </Grid>
-        <Grid Grid.Row="2"
-              Margin="5">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <TextBlock Grid.Column="0"
-                       FontSize="16"
-                       FontWeight="Bold"
-                       VerticalAlignment="Stretch"
-                       HorizontalAlignment="Stretch"
-                       Text="Observed Flight Data Values:" />
-        </Grid>
-        <Grid Grid.Row="3"
-              Margin="5">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <Grid Margin="5"
-                  Grid.Row="0"
-                  Grid.Column="0"
-                  VerticalAlignment="Stretch"
-                  HorizontalAlignment="Stretch">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0"
-                           VerticalAlignment="Stretch"
-                           HorizontalAlignment="Stretch"
-                           Text="Roll:" />
-                <TextBlock Grid.Column="1"
-                           VerticalAlignment="Stretch"
-                           HorizontalAlignment="Stretch"
-                           Text="{Binding ObservedRoll}" />
-            </Grid>
-            <Grid Margin="5"
-                  Grid.Row="0"
-                  Grid.Column="1"
-                  VerticalAlignment="Stretch"
-                  HorizontalAlignment="Stretch">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0"
-                           VerticalAlignment="Stretch"
-                           HorizontalAlignment="Stretch"
-                           Text="Pitch:" />
-                <TextBlock Grid.Column="1"
-                           VerticalAlignment="Stretch"
-                           HorizontalAlignment="Stretch"
-                           Text="{Binding ObservedPitch}" />
-            </Grid>
-            <Grid Margin="5"
-                  Grid.Row="1"
-                  Grid.Column="0"
-                  VerticalAlignment="Stretch"
-                  HorizontalAlignment="Stretch">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0"
-                           VerticalAlignment="Stretch"
-                           HorizontalAlignment="Stretch"
-                           Text="Yaw:" />
-                <TextBlock Grid.Column="1"
-                           VerticalAlignment="Stretch"
-                           HorizontalAlignment="Stretch"
-                           Text="{Binding ObservedYaw}" />
-            </Grid>
-            <Grid Margin="5"
-                  Grid.Row="1"
-                  Grid.Column="1"
-                  VerticalAlignment="Stretch"
-                  HorizontalAlignment="Stretch">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0"
-                           VerticalAlignment="Stretch"
-                           HorizontalAlignment="Stretch"
-                           Text="Throttle:" />
-                <TextBlock Grid.Column="1"
-                           VerticalAlignment="Stretch"
-                           HorizontalAlignment="Stretch"
-                           Text="{Binding ObservedThrottle}" />
-            </Grid>
-        </Grid>
-        <Grid Grid.Row="4"
-              Margin="5">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <TextBlock Grid.Column="0"
-                       FontSize="16"
-                       FontWeight="Bold"
-                       VerticalAlignment="Stretch"
-                       HorizontalAlignment="Stretch"
-                       Text="Flight Status:" />
-        </Grid>
-        <Grid Grid.Row="5">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
@@ -245,7 +40,133 @@
                            Text="{Binding IsArmedStatus}" />
             </Grid>
         </Grid>
-        <Grid Grid.Row="6">
+        <Grid Grid.Row="1"
+              Margin="5">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0"
+                       FontWeight="Bold"
+                       Text="Flight Status:"
+                       VerticalAlignment="Stretch"
+                       HorizontalAlignment="Stretch" />
+            <ListView Grid.Row="1"
+                      ItemsSource="{Binding FlightStateDataViewModels}">
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="HorizontalAlignment"
+                                Value="Stretch" />
+                        <Setter Property="VerticalAlignment"
+                                Value="Center" />
+                        <Setter Property="HorizontalContentAlignment"
+                                Value="Stretch" />
+                        <Setter Property="VerticalContentAlignment"
+                                Value="Center" />
+                    </Style>
+                </ListView.ItemContainerStyle>
+                <ListView.HeaderTemplate>
+                    <DataTemplate>
+                        <Grid Padding="12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" 
+                                       Text="State"
+                                       HorizontalAlignment="Center"  />
+                            <TextBlock Grid.Column="1" 
+                                       Text="Commanded" 
+                                       HorizontalAlignment="Center" />
+                            <TextBlock Grid.Column="2" 
+                                       Text="Observed" 
+                                       HorizontalAlignment="Center" />
+                            <TextBlock Grid.Column="3" 
+                                       Text="Error" 
+                                       HorizontalAlignment="Center" />
+                            <TextBlock Grid.Column="4" 
+                                       Text="cKp"
+                                       HorizontalAlignment="Center"  />
+                            <TextBlock Grid.Column="5" 
+                                       Text="oKp"
+                                       HorizontalAlignment="Center"  />
+                            <TextBlock Grid.Column="6" 
+                                       Text="cKi"
+                                       HorizontalAlignment="Center"  />
+                            <TextBlock Grid.Column="7" 
+                                       Text="oKi"
+                                       HorizontalAlignment="Center"  />
+                            <TextBlock Grid.Column="8" 
+                                       Text="cKd"
+                                       HorizontalAlignment="Center"  />
+                            <TextBlock Grid.Column="9" 
+                                       Text="oKd"
+                                       HorizontalAlignment="Center"  />
+                        </Grid>
+                    </DataTemplate>
+                </ListView.HeaderTemplate>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Padding="12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" 
+                                       Text="{Binding State}"
+                                       HorizontalAlignment="Center" />
+                            <TextBlock Grid.Column="1" 
+                                       Text="{Binding Commanded}"
+                                       HorizontalAlignment="Center"  />
+                            <TextBlock Grid.Column="2" 
+                                       Text="{Binding Observed}"
+                                       HorizontalAlignment="Center"  />
+                            <TextBlock Grid.Column="3" 
+                                       Text="{Binding Error}" 
+                                       HorizontalAlignment="Center" />
+                            <TextBox Grid.Column="4" 
+                                     Text="{Binding cKp, Mode=TwoWay}" 
+                                     BorderThickness="0"
+                                     HorizontalAlignment="Center" />
+                            <TextBlock Grid.Column="5" 
+                                       Text="{Binding oKp}" 
+                                       HorizontalAlignment="Center" />
+                            <TextBox Grid.Column="6" 
+                                     Text="{Binding cKi, Mode=TwoWay}" 
+                                     BorderThickness="0"
+                                     HorizontalAlignment="Center" />
+                            <TextBlock Grid.Column="7" 
+                                       Text="{Binding oKi}" 
+                                       HorizontalAlignment="Center" />
+                            <TextBox Grid.Column="8" 
+                                     Text="{Binding cKd, Mode=TwoWay}"
+                                     BorderThickness="0"
+                                     HorizontalAlignment="Center"  />
+                            <TextBlock Grid.Column="9" 
+                                       Text="{Binding oKd}" 
+                                       HorizontalAlignment="Center" />
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>                
+            </ListView>
+        </Grid>        
+        <Grid Grid.Row="2">
             <Charting:Chart Margin="5"
                             VerticalAlignment="Stretch"
                             HorizontalAlignment="Stretch">

@@ -42,13 +42,6 @@ namespace XboxOneControllerTcpClient.ViewModel
                 // Get New Observed Flight Data from Server
                 observedDataServerResponse = await GetObservedDataAsync($"/observed").ConfigureAwait(false);
 
-                // Update Current Flight Data
-                observedData.Armed = observedDataServerResponse.Armed;
-                observedData.Yaw = observedDataServerResponse.Yaw;
-                observedData.Roll = observedDataServerResponse.Roll;
-                observedData.Pitch = observedDataServerResponse.Pitch;
-                observedData.Throttle = observedDataServerResponse.Throttle;
-
                 // Update Server with Commanded Flight Data
                 commandedDataServerResponse = await UpdateFlightDataAsync(commandedData).ConfigureAwait(false);
             }
