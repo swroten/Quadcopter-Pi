@@ -24,6 +24,10 @@ class Quadcopter:
         # Set as disarmed
         self.armed = False
         
+        # Scaling Limits
+        self.OutputMinimum = -1
+        self.OutputMaximum = 1
+        
         # Assign GPIO to Variable for Reference
         self.FrontRight = 2 #Front Right Motor - Spins Counter Clock Wise
         self.FrontLeft = 3  #Front Left Motor  - Spins Clock Wise
@@ -46,6 +50,9 @@ class Quadcopter:
         self.MinimumThrust = 0.0
         self.MaximumThrust = (0.000000124736 * self.MaximumRPM * self.MaximumRPM)
 
+        # Set Thrust Deadband to 5% of Maximum Thrust
+        self.DEADBAND = 0.05 * (self.MaximumThrust - self.MinimumThrust)
+ 
         # Set the Calibrated Motor PulseWidth Minimum
         self.FrontRightMinimumPulseWidth = 1230
         self.FrontLeftMinimumPulseWidth = 1265
@@ -77,6 +84,9 @@ class Quadcopter:
         self.FrontLeftScaledPulseWidth = 0
         self.BackRightScaledPulseWidth = 0
         self.BackLeftScaledPulseWidth = 0
+
+        # Recall Last Throttle
+        self.last_raw_throttle = 0.0
 
     # Get Whether Armed
     def get_is_armed(self):
@@ -118,7 +128,7 @@ class Quadcopter:
 
     # Get Observed Scaled Throttle
     def get_scaled_throttle(self):
-        return self.scale(self.compute_resultant_vector(), self.MinimumThrust, self.MaximumThrust, self.MinimumSignal, self.MaximumSignal)
+        return self.scale(self.get_raw_throttle(), self.MinimumThrust, self.MaximumThrust, -1.0, 1.0)
 
     #This will stop every action your Pi is performing for ESC of course.        
     def stop(self): 
@@ -129,56 +139,49 @@ class Quadcopter:
         pi.stop()
         self.armed = False
 
-    # Step Individual Motor    
-    def step_motor(self, setpoint, current, step): 
-        # Create local variable for new current value
-        newCurrent = current
-
-        # if within one step...
-        if (abs(newCurrent - setpoint) < step):
-            # set current to setpoint
-            newCurrent = setpoint
-        # else if greater than demanded setpoint
-        elif (newCurrent > setpoint):
-            # decrease current pulse width
-            newCurrent -= step
-        # otherwise
-        else:
-            # increase current pulse width
-            newCurrent += step
-
-        # return newly calculated
-        return newCurrent
-
-    # Step Motors 
-    def step_motors(self, front_left_setpoint, front_right_setpoint, back_left_setpoint, back_right_setpoint):
+    # Process Commanded States versus Observed States to Step Motors
+    def process_flight_states(self, throttleOutput, rollOutput, pitchOutput, yawOutput):
+        
+        # Get Demanded Output
+        frontLeftDemandedOutput = self.scale((throttleOutput + rollOutput - pitchOutput - yawOutput), self.OutputMinimum, self.OutputMaximum, self.MinimumSignal, self.MaximumSignal)
+        frontRightDemandedOutput = self.scale((throttleOutput - rollOutput - pitchOutput + yawOutput), self.OutputMinimum, self.OutputMaximum, self.MinimumSignal, self.MaximumSignal)
+        backLeftDemandedOutput = self.scale((throttleOutput + rollOutput + pitchOutput + yawOutput), self.OutputMinimum, self.OutputMaximum, self.MinimumSignal, self.MaximumSignal)
+        backRightDemandedOutput = self.scale((throttleOutput - rollOutput + pitchOutput - yawOutput), self.OutputMinimum, self.OutputMaximum, self.MinimumSignal, self.MaximumSignal)
+        
         # Handle Front Left
-        self.FrontLeftScaledPulseWidth = self.step_motor(front_left_setpoint, self.FrontLeftScaledPulseWidth, self.StepRate)
+        self.FrontLeftScaledPulseWidth = max(self.MinimumSignal, min(self.MaximumSignal, frontLeftDemandedOutput))
         self.FrontLeftPulseWidth = self.scale(self.FrontLeftScaledPulseWidth, self.MinimumSignal, self.MaximumSignal, self.FrontLeftMinimumPulseWidth, self.FrontLeftMaximumPulseWidth)
         #pi.set_servo_pulsewidth(self.FrontLeft, self.FrontLeftPulseWidth)
-        print("Front Left Pulse Width: ", self.FrontLeftScaledPulseWidth)
 
         # Handle Front Right
-        self.FrontRightScaledPulseWidth = self.step_motor(front_right_setpoint, self.FrontRightScaledPulseWidth)
+        self.FrontRightScaledPulseWidth = max(self.MinimumSignal, min(self.MaximumSignal, frontRightDemandedOutput))
         self.FrontRightPulseWidth = self.scale(self.FrontRightScaledPulseWidth, self.MinimumSignal, self.MaximumSignal, self.FrontRightMinimumPulseWidth, self.FrontRightMaximumPulseWidth)
         #pi.set_servo_pulsewidth(self.FrontRight, self.FrontRightPulseWidth)
-        print("Front Right Pulse Width: ", self.FrontRightScaledPulseWidth)
         
         # Handle Back Left
-        self.BackLeftScaledPulseWidth = self.step_motor(back_left_setpoint, self.BackLeftScaledPulseWidth)
+        self.BackLeftScaledPulseWidth = max(self.MinimumSignal, min(self.MaximumSignal, backLeftDemandedOutput))
         self.BackLeftPulseWidth = self.scale(self.BackLeftScaledPulseWidth, self.MinimumSignal, self.MaximumSignal, self.BackLeftMinimumPulseWidth, self.BackLeftMaximumPulseWidth)
         #pi.set_servo_pulsewidth(self.BackLeft, self.BackLeftPulseWidth)
-        print("Back Left Pulse Width: ", self.BackLeftScaledPulseWidth)
         
         # Handle Back Right
-        self.BackRightScaledPulseWidth = self.step_motor(back_right_setpoint, self.BackRightScaledPulseWidth)
+        self.BackRightScaledPulseWidth = max(self.MinimumSignal, min(self.MaximumSignal, backRightDemandedOutput))
         self.BackRightPulseWidth = self.scale(self.BackRightScaledPulseWidth, self.MinimumSignal, self.MaximumSignal, self.BackRightMinimumPulseWidth, self.BackRightMaximumPulseWidth)
         #pi.set_servo_pulsewidth(self.BackRight, self.BackRightPulseWidth)
-        print("Back Right Pulse Width: ", self.BackRightScaledPulseWidth)
 
-    # Process Commanded States versus Observed States to Step Motors
-    #def process_flight_states(self, cRoll, oRoll, co
+        # Print Pulse Width
+        print("Demanded Output -> FL: {0:0.2F}, FR: {1:0.2F}, BL: {2:0.2F}, BR: {3:0.2F}".format(
+        frontLeftDemandedOutput,
+        frontRightDemandedOutput,
+        backLeftDemandedOutput,
+        backRightDemandedOutput))
 
+        # Print Pulse Width
+        #print("Pulse Width     -> FL: {0:0.2F}, FR: {1:0.2F}, BL: {2:0.2F}, BR: {3:0.2F}".format(
+        #self.FrontLeftScaledPulseWidth,
+        #self.FrontRightScaledPulseWidth,
+        #self.BackLeftScaledPulseWidth,
+        #self.BackRightScaledPulseWidth))
+        
     # Arming Procedure for all ESC    
     def arm(self): 
         # Set to 0

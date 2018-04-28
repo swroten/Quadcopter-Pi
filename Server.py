@@ -58,8 +58,8 @@ observed = {
     'Throttle': 0.0,
     'ThrottleKi':0.0,
     'ThrottleKp':0.0,
-    'ThrottleKd':0.0
-    'ThrottleError':0.0,
+    'ThrottleKd':0.0,
+    'ThrottleError':0.0
 }
 
 @app.errorhandler(404)

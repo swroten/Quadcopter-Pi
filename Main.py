@@ -19,32 +19,32 @@ imu = IMU.IMU()
 quad = Quadcopter.Quadcopter()
 
 # Create Reference to PID Variables
-oRollKi = 1.0 
-oRollKp = 50.0 
-oRollKd = 1.0
-oRollError = 0.0
-oPitchKi = 1.0 
-oPitchKp = 50.0 
-oPitchKd = 1.0 
-oPitchError = 0.0
-oYawKi = 1.0 
-oYawKp = 50.0 
-oYawKd = 1.0 
+cYawKi = 0.05
+cYawKp = 0.10
+cYawKd = 0.05 
+cRollKi = 0.05 
+cRollKp = 0.10
+cRollKd = 0.05
+cPitchKi = 0.05 
+cPitchKp = 0.10 
+cPitchKd = 0.05 
+cThrottleKi = 0.0
+cThrottleKp = 0.1
+cThrottleKd = 0.0
 oYawError = 0.0
-oThrottleKi = 1.0 
-oThrottleKp = 50.0 
-oThrottleKd = 1.0
+oRollError = 0.0
+oPitchError = 0.0
 oThrottleError = 0.0
 
 # Create limits for integral
-integral_min = 0
-integral_max = 1000
+integral_min = -1
+integral_max = 1
 
 # Create PIDs
-yawPID = PID.PID(oYawKp, oYawKi, oYawKd, integral_min, integral_max)
-rollPID = PID.PID(oRollKp, oRollKi, oRollKd, integral_min, integral_max)
-pitchPID = PID.PID(oPitchKp, oPitchKi, oPitchKd, integral_min, integral_max)
-throttlePID = PID.PID(oThrottleKp, oThrottleKi, oThrottleKd, integral_min, integral_max)
+yawPID = PID.PID(cYawKp, cYawKi, cYawKd, integral_min, integral_max)
+rollPID = PID.PID(cRollKp, cRollKi, cRollKd, integral_min, integral_max)
+pitchPID = PID.PID(cPitchKp, cPitchKi, cPitchKd, integral_min, integral_max)
+throttlePID = PID.PID(cThrottleKp, cThrottleKi, cThrottleKd, integral_min, integral_max)
 
 # Create bool for continuing to run
 running = True
@@ -73,26 +73,28 @@ while running:
 
     # Update Observed Values in Server
     Server.observed['Armed'] = oArmed
-    Server.observed['Roll'] = oRoll
-    Server.observed['RollKp'] = oRollKp
-    Server.observed['RollKi'] = oRollKi
-    Server.observed['RollKd'] = oRollKd
-    Server.observed['RollError'] = oRollError
-    Server.observed['Pitch'] = oPitch
-    Server.observed['PitchKp'] = oPitchKp
-    Server.observed['PitchKi'] = oPitchKi
-    Server.observed['PitchKd'] = oPitchKd
-    Server.observed['PitchError'] = oPitchError
     Server.observed['Yaw'] = oYaw
-    Server.observed['YawKp'] = oYawKp
-    Server.observed['YawKi'] = oYawKi
-    Server.observed['YawKd'] = oYawKd
-    Server.observed['YawError'] = oYawError
+    Server.observed['Roll'] = oRoll
+    Server.observed['Pitch'] = oPitch
     Server.observed['Throttle'] = oThrottle
-    Server.observed['ThrottleKp'] = oThrottleKp
-    Server.observed['ThrottleKi'] = oThrottleKi
-    Server.observed['ThrottleKd'] = oThrottleKd
+    Server.observed['YawError'] = oYawError
+    Server.observed['RollError'] = oRollError
+    Server.observed['PitchError'] = oPitchError
     Server.observed['ThrottleError'] = oThrottleError
+
+    # Update Constants based on Commanded
+    Server.observed['YawKp'] = cYawKp
+    Server.observed['YawKi'] = cYawKi
+    Server.observed['YawKd'] = cYawKd   
+    Server.observed['RollKp'] = cRollKp
+    Server.observed['RollKi'] = cRollKi
+    Server.observed['RollKd'] = cRollKd 
+    Server.observed['PitchKp'] = cPitchKp
+    Server.observed['PitchKi'] = cPitchKi
+    Server.observed['PitchKd'] = cPitchKd
+    Server.observed['ThrottleKp'] = cThrottleKp
+    Server.observed['ThrottleKi'] = cThrottleKi
+    Server.observed['ThrottleKd'] = cThrottleKd
 
     # Get Commanded Values
     cArm = Server.commands['Armed']
@@ -135,9 +137,13 @@ while running:
     pitchOutput = pitchPID.update(cPitch, oPitch)
     yawOutput = yawPID.update(cYaw, oYaw)
     throttleOutput = throttlePID.update(cThrottle, oThrottle)
-
+    
+    # Print Demanded Output
+    #print("Demanded Output -> Roll: {0:0.2F}, Pitch: {1:0.2F}, Yaw: {2:0.2F}, Thrust: {3:0.2F}".format(
+    #    rollOutput, pitchOutput, yawOutput, throttleOutput))
+    
     # Step Motors in response to Demanded Output
-    #quad
+    quad.process_flight_states(throttleOutput, rollOutput, pitchOutput, throttleOutput)
 
     # Get  Updated PID Error Values
     oRollError = rollPID.getError()
@@ -145,10 +151,6 @@ while running:
     oYawError = yawPID.getError()
     oThrottleError = throttlePID.getError()
     
-    # Print Demanded Output
-    print("Demanded Output -> Roll: {0:0.2F}, Pitch: {1:0.2F}, Yaw: {2:0.2F}, Thrust: {3:0.2F}".format(
-        rollOutput, pitchOutput, yawOutput, thrustOutput))
-
     # Arm if Commanded
     if (cArm):
         # Arm
