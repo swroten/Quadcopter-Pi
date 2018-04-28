@@ -31,11 +31,13 @@ namespace XboxOneControllerTcpClient.ViewModel
             _commandedData = new Commanded();
             FlightStateDataViewModels = new List<FlightStateDataViewModel>()
             {
-                new FlightStateDataViewModel(FlightStates.Roll, _commandedData, _observedData),
-                new FlightStateDataViewModel(FlightStates.Pitch, _commandedData, _observedData),
-                new FlightStateDataViewModel(FlightStates.Yaw, _commandedData, _observedData),
-                new FlightStateDataViewModel(FlightStates.Throttle, _commandedData, _observedData)
+                new FlightStateDataViewModel(FlightStates.Roll, _commandedData, _observedData) { cKi = 0.05, cKp = 0.1, cKd = 0.05 },
+                new FlightStateDataViewModel(FlightStates.Pitch, _commandedData, _observedData) { cKi = 0.05, cKp = 0.1, cKd = 0.05 },
+                new FlightStateDataViewModel(FlightStates.Yaw, _commandedData, _observedData) { cKi = 0.05, cKp = 0.1, cKd = 0.05 },
+                new FlightStateDataViewModel(FlightStates.Throttle, _commandedData, _observedData) { cKi = 0.0, cKp = 0.1, cKd = 0.0 }
             };
+
+            // Set Initial PID Constants
 
             // Create Rest Client
             _myRestClient = new MyRestClient();
@@ -56,11 +58,8 @@ namespace XboxOneControllerTcpClient.ViewModel
             {
                 _observedData = value;
                 OnPropertyChanged("ObservedData");
-                OnPropertyChanged("ObservedRoll");
-                OnPropertyChanged("ObservedPitch");
-                OnPropertyChanged("ObservedYaw");
-                OnPropertyChanged("ObservedThrottle");
                 OnPropertyChanged("IsArmedStatus");
+                OnPropertyChanged("FlightStateDataViewModels");
             }
         }
 
@@ -74,10 +73,6 @@ namespace XboxOneControllerTcpClient.ViewModel
             {
                 _commandedData = value;
                 OnPropertyChanged("CommandedData");
-                OnPropertyChanged("CommandedRoll");
-                OnPropertyChanged("CommandedPitch");
-                OnPropertyChanged("CommandedYaw");
-                OnPropertyChanged("CommandedThrottle");
                 OnPropertyChanged("ObservedArmed");
                 OnPropertyChanged("CommandedArmed");
             }
@@ -407,6 +402,10 @@ namespace XboxOneControllerTcpClient.ViewModel
             // Notify Update
             for (int i = 0; i < FlightStateDataViewModels.Count; i++)
             {
+                // Update Reference
+                FlightStateDataViewModels[i].ObservedData = ObservedData;
+
+                // Notify of Update
                 FlightStateDataViewModels[i].NotifyValuesChanged();
             }
         }

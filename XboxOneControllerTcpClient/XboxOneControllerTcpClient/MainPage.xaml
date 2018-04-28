@@ -76,6 +76,9 @@
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock Grid.Column="0" 
                                        Text="State"
@@ -90,13 +93,22 @@
                                        Text="Error" 
                                        HorizontalAlignment="Center" />
                             <TextBlock Grid.Column="4" 
-                                       Text="Proportional Constant"
+                                       Text="cKp"
                                        HorizontalAlignment="Center"  />
                             <TextBlock Grid.Column="5" 
-                                       Text="Integral Constant"
+                                       Text="oKp"
                                        HorizontalAlignment="Center"  />
                             <TextBlock Grid.Column="6" 
-                                       Text="Derivative Constant"
+                                       Text="cKi"
+                                       HorizontalAlignment="Center"  />
+                            <TextBlock Grid.Column="7" 
+                                       Text="oKi"
+                                       HorizontalAlignment="Center"  />
+                            <TextBlock Grid.Column="8" 
+                                       Text="cKd"
+                                       HorizontalAlignment="Center"  />
+                            <TextBlock Grid.Column="9" 
+                                       Text="oKd"
                                        HorizontalAlignment="Center"  />
                         </Grid>
                     </DataTemplate>
@@ -105,6 +117,9 @@
                     <DataTemplate>
                         <Grid Padding="12">
                             <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
@@ -126,17 +141,26 @@
                                        Text="{Binding Error}" 
                                        HorizontalAlignment="Center" />
                             <TextBox Grid.Column="4" 
-                                     Text="{Binding Kp}" 
+                                     Text="{Binding cKp, Mode=TwoWay}" 
                                      BorderThickness="0"
                                      HorizontalAlignment="Center" />
-                            <TextBox Grid.Column="5" 
-                                     Text="{Binding Ki}" 
-                                     BorderThickness="0"
-                                     HorizontalAlignment="Center" />
+                            <TextBlock Grid.Column="5" 
+                                       Text="{Binding oKp}" 
+                                       HorizontalAlignment="Center" />
                             <TextBox Grid.Column="6" 
-                                     Text="{Binding Kd}"
+                                     Text="{Binding cKi, Mode=TwoWay}" 
+                                     BorderThickness="0"
+                                     HorizontalAlignment="Center" />
+                            <TextBlock Grid.Column="7" 
+                                       Text="{Binding oKi}" 
+                                       HorizontalAlignment="Center" />
+                            <TextBox Grid.Column="8" 
+                                     Text="{Binding cKd, Mode=TwoWay}"
                                      BorderThickness="0"
                                      HorizontalAlignment="Center"  />
+                            <TextBlock Grid.Column="9" 
+                                       Text="{Binding oKd}" 
+                                       HorizontalAlignment="Center" />
                         </Grid>
                     </DataTemplate>
                 </ListView.ItemTemplate>                

@@ -70,7 +70,151 @@ namespace XboxOneControllerTcpClient.ViewModel
                 return observed;
             }
         }
-        public double Kp
+        public double cKp
+        {
+            get
+            {
+                // Initialize
+                double kp = 0.0;
+
+                // Switch on State
+                switch (State)
+                {
+                    case FlightStates.Roll:
+                        kp = CommandedData.RollKp;
+                        break;
+                    case FlightStates.Pitch:
+                        kp = CommandedData.PitchKp;
+                        break;
+                    case FlightStates.Yaw:
+                        kp = CommandedData.YawKp;
+                        break;
+                    case FlightStates.Throttle:
+                        kp = CommandedData.ThrottleKp;
+                        break;
+                }
+
+                // return
+                return kp;
+            }
+            set
+            {
+                // Switch on State
+                switch (State)
+                {
+                    case FlightStates.Roll:
+                        CommandedData.RollKp = value;
+                        break;
+                    case FlightStates.Pitch:
+                        CommandedData.PitchKp = value;
+                        break;
+                    case FlightStates.Yaw:
+                        CommandedData.YawKp = value;
+                        break;
+                    case FlightStates.Throttle:
+                        CommandedData.ThrottleKp = value;
+                        break;
+                }
+                OnPropertyChanged("cKp");
+            }
+        }
+        public double cKi
+        {
+            get
+            {
+                // Initialize
+                double ki = 0.0;
+
+                // Switch on State
+                switch (State)
+                {
+                    case FlightStates.Roll:
+                        ki = CommandedData.RollKi;
+                        break;
+                    case FlightStates.Pitch:
+                        ki = CommandedData.PitchKi;
+                        break;
+                    case FlightStates.Yaw:
+                        ki = CommandedData.YawKi;
+                        break;
+                    case FlightStates.Throttle:
+                        ki = CommandedData.ThrottleKi;
+                        break;
+                }
+
+                // return
+                return ki;
+            }
+            set
+            {
+                // Switch on State
+                switch (State)
+                {
+                    case FlightStates.Roll:
+                        CommandedData.RollKi = value;
+                        break;
+                    case FlightStates.Pitch:
+                        CommandedData.PitchKi = value;
+                        break;
+                    case FlightStates.Yaw:
+                        CommandedData.YawKi = value;
+                        break;
+                    case FlightStates.Throttle:
+                        CommandedData.ThrottleKi = value;
+                        break;
+                }
+                OnPropertyChanged("cKi");
+            }
+        }
+        public double cKd
+        {
+            get
+            {
+                // Initialize
+                double kd = 0.0;
+
+                // Switch on State
+                switch (State)
+                {
+                    case FlightStates.Roll:
+                        kd = CommandedData.RollKd;
+                        break;
+                    case FlightStates.Pitch:
+                        kd = CommandedData.PitchKd;
+                        break;
+                    case FlightStates.Yaw:
+                        kd = CommandedData.YawKd;
+                        break;
+                    case FlightStates.Throttle:
+                        kd = CommandedData.ThrottleKd;
+                        break;
+                }
+
+                // return
+                return kd;
+            }
+            set
+            {
+                // Switch on State
+                switch (State)
+                {
+                    case FlightStates.Roll:
+                        CommandedData.RollKd = value;
+                        break;
+                    case FlightStates.Pitch:
+                        CommandedData.PitchKd = value;
+                        break;
+                    case FlightStates.Yaw:
+                        CommandedData.YawKd = value;
+                        break;
+                    case FlightStates.Throttle:
+                        CommandedData.ThrottleKd = value;
+                        break;
+                }
+                OnPropertyChanged("cKd");
+            }
+        }
+        public double oKp
         {
             get
             {
@@ -104,24 +248,20 @@ namespace XboxOneControllerTcpClient.ViewModel
                 {
                     case FlightStates.Roll:
                         ObservedData.RollKp = value;
-                        CommandedData.RollKp = value;
                         break;
                     case FlightStates.Pitch:
                         ObservedData.PitchKp = value;
-                        CommandedData.PitchKp = value;
                         break;
                     case FlightStates.Yaw:
                         ObservedData.YawKp = value;
-                        CommandedData.YawKp = value;
                         break;
                     case FlightStates.Throttle:
                         ObservedData.ThrottleKp = value;
-                        CommandedData.ThrottleKp = value;
                         break;
                 }
             }
         }
-        public double Ki
+        public double oKi
         {
             get
             {
@@ -155,24 +295,20 @@ namespace XboxOneControllerTcpClient.ViewModel
                 {
                     case FlightStates.Roll:
                         ObservedData.RollKi = value;
-                        CommandedData.RollKi = value;
                         break;
                     case FlightStates.Pitch:
                         ObservedData.PitchKi = value;
-                        CommandedData.PitchKi = value;
                         break;
                     case FlightStates.Yaw:
                         ObservedData.YawKi = value;
-                        CommandedData.YawKi = value;
                         break;
                     case FlightStates.Throttle:
                         ObservedData.ThrottleKi = value;
-                        CommandedData.ThrottleKi = value;
                         break;
                 }
             }
         }
-        public double Kd
+        public double oKd
         {
             get
             {
@@ -206,19 +342,15 @@ namespace XboxOneControllerTcpClient.ViewModel
                 {
                     case FlightStates.Roll:
                         ObservedData.RollKd = value;
-                        CommandedData.RollKd = value;
                         break;
                     case FlightStates.Pitch:
                         ObservedData.PitchKd = value;
-                        CommandedData.PitchKd = value;
                         break;
                     case FlightStates.Yaw:
                         ObservedData.YawKd = value;
-                        CommandedData.YawKd = value;
                         break;
                     case FlightStates.Throttle:
                         ObservedData.ThrottleKd = value;
-                        CommandedData.ThrottleKd = value;
                         break;
                 }
             }
@@ -250,8 +382,8 @@ namespace XboxOneControllerTcpClient.ViewModel
             }
         }
         public FlightStates State { get; private set; }
-        public Commanded CommandedData { get; private set; }
-        public Observed ObservedData { get; private set; }
+        public Commanded CommandedData { get; set; }
+        public Observed ObservedData { get; set; }
         
         #region INotifyPropertyChanged Members
         private void OnPropertyChanged(string propertyName)
@@ -269,9 +401,9 @@ namespace XboxOneControllerTcpClient.ViewModel
         {
             OnPropertyChanged("Commanded");
             OnPropertyChanged("Observed");
-            OnPropertyChanged("Kp");
-            OnPropertyChanged("Ki");
-            OnPropertyChanged("Kd");
+            OnPropertyChanged("oKp");
+            OnPropertyChanged("oKi");
+            OnPropertyChanged("oKd");
             OnPropertyChanged("Error");
             OnPropertyChanged("State");
             OnPropertyChanged("CommandedData");
