@@ -34,6 +34,12 @@ namespace XboxOneControllerTcpClient.Model
             }
         }
 
+        public double RollKp { get; set; } = 0.0;
+
+        public double RollKi { get; set; } = 0.0;
+
+        public double RollKd { get; set; } = 0.0;
+
         public double Pitch
         {
             get
@@ -46,6 +52,12 @@ namespace XboxOneControllerTcpClient.Model
                 _pitch = Math.Min(1.0, Math.Max(-1.0, value));
             }
         }
+
+        public double PitchKp { get; set; } = 0.0;
+
+        public double PitchKi { get; set; } = 0.0;
+
+        public double PitchKd { get; set; } = 0.0;
 
         public double Yaw
         {
@@ -60,6 +72,12 @@ namespace XboxOneControllerTcpClient.Model
             }
         }
 
+        public double YawKp { get; set; } = 0.0;
+
+        public double YawKi { get; set; } = 0.0;
+
+        public double YawKd { get; set; } = 0.0;
+
         public double Throttle
         {
             get
@@ -72,6 +90,12 @@ namespace XboxOneControllerTcpClient.Model
                 _throttle = Math.Min(1.0, Math.Max(-1.0, value));
             }
         }
+
+        public double ThrottleKp { get; set; } = 0.0;
+
+        public double ThrottleKi { get; set; } = 0.0;
+
+        public double ThrottleKd { get; set; } = 0.0;
 
         #endregion
         private double _roll = 0.0;

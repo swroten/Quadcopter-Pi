@@ -100,6 +100,8 @@
     </Compile>
     <Compile Include="Model\Commanded.cs" />
     <Compile Include="Model\DataPoint.cs" />
+    <Compile Include="ViewModel\FlightStateDataViewModel.cs" />
+    <Compile Include="Model\FlightStates.cs" />
     <Compile Include="Model\Observed.cs" />
     <Compile Include="Model\Message.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

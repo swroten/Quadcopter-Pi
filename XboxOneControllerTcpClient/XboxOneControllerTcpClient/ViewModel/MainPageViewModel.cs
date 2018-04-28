@@ -29,6 +29,13 @@ namespace XboxOneControllerTcpClient.ViewModel
             // Create Flight Data
             _observedData = new Observed();
             _commandedData = new Commanded();
+            FlightStateDataViewModels = new List<FlightStateDataViewModel>()
+            {
+                new FlightStateDataViewModel(FlightStates.Roll, _commandedData, _observedData),
+                new FlightStateDataViewModel(FlightStates.Pitch, _commandedData, _observedData),
+                new FlightStateDataViewModel(FlightStates.Yaw, _commandedData, _observedData),
+                new FlightStateDataViewModel(FlightStates.Throttle, _commandedData, _observedData)
+            };
 
             // Create Rest Client
             _myRestClient = new MyRestClient();
@@ -154,79 +161,6 @@ namespace XboxOneControllerTcpClient.ViewModel
             }
         }
 
-        public bool CommandedArmed
-        {
-            get
-            {
-                return _commandedData.Armed;
-            }
-            set
-            {
-                _commandedData.Armed = value;
-                OnPropertyChanged("CommandedArmed");
-            }
-        }
-
-        public double CommandedRoll
-        {
-            get
-            {
-                return _commandedData.Roll;
-            }
-            set
-            {
-                _commandedData.Roll = value;
-                OnPropertyChanged("CommandedRoll");
-            }
-        }
-
-        public double CommandedPitch
-        {
-            get
-            {
-                return _commandedData.Pitch;
-            }
-            set
-            {
-                _commandedData.Pitch = value;
-                OnPropertyChanged("CommandedPitch");
-            }
-        }
-
-        public double CommandedYaw
-        {
-            get
-            {
-                return _commandedData.Yaw;
-            }
-            set
-            {
-                _commandedData.Yaw = value;
-                OnPropertyChanged("CommandedYaw");
-            }
-        }
-
-        public double CommandedThrottle
-        {
-            get
-            {
-                return _commandedData.Throttle;
-            }
-            set
-            {
-                _commandedData.Throttle = value;
-                OnPropertyChanged("CommandedThrottle");
-            }
-        }
-
-        public string IsArmedStatus
-        {
-            get
-            {
-                return (ObservedArmed) ? "ARMED" : "OFF";
-            }
-        }
-
         public bool ObservedArmed
         {
             get
@@ -241,58 +175,40 @@ namespace XboxOneControllerTcpClient.ViewModel
             }
         }
 
-        public double ObservedRoll
+        public bool CommandedArmed
         {
             get
             {
-                return _observedData.Roll;
+                return _commandedData.Armed;
             }
             set
             {
-                _observedData.Roll = value;
-                OnPropertyChanged("ObservedRoll");
+                _commandedData.Armed = value;
+                OnPropertyChanged("CommandedArmed");
             }
         }
 
-        public double ObservedPitch
+        public string IsArmedStatus
         {
             get
             {
-                return _observedData.Pitch;
-            }
-            set
-            {
-                _observedData.Pitch = value;
-                OnPropertyChanged("ObservedPitch");
+                return (ObservedArmed) ? "ARMED" : "OFF";
             }
         }
 
-        public double ObservedYaw
+        public List<FlightStateDataViewModel> FlightStateDataViewModels
         {
             get
             {
-                return _observedData.Yaw;
+                return _flightStateDataViewModels;
             }
             set
             {
-                _observedData.Yaw = value;
-                OnPropertyChanged("ObservedYaw");
+                _flightStateDataViewModels = value;
+                OnPropertyChanged("FlightStateDataViewModels");
             }
         }
 
-        public double ObservedThrottle
-        {
-            get
-            {
-                return _observedData.Throttle;
-            }
-            set
-            {
-                _observedData.Throttle = value;
-                OnPropertyChanged("ObservedThrottle");
-            }
-        }
-        
         public ObservableCollection<DataPoint> ObservedRollDataPoints { get; } = new ObservableCollection<DataPoint>();
 
         public ObservableCollection<DataPoint> ObservedPitchDataPoints { get; } = new ObservableCollection<DataPoint>();
@@ -431,10 +347,10 @@ namespace XboxOneControllerTcpClient.ViewModel
             CommandedData.Exit = (reading.Buttons.HasFlag(GamepadButtons.Y) || (CommandedData.Exit));            
 
             // Update Commanded Flight Data
-            CommandedYaw = LeftThumbStickX;
-            CommandedThrottle = LeftThumbStickY;
-            CommandedRoll = RightThumbStickX;
-            CommandedPitch = RightThumbStickY;
+            CommandedData.Yaw = LeftThumbStickX;
+            CommandedData.Throttle = LeftThumbStickY;
+            CommandedData.Roll = RightThumbStickX;
+            CommandedData.Pitch = RightThumbStickY;
 
             // Accumulate time
             _timeSinceLastChartUpdateMs += _gatherMessageFrequencyMs;
@@ -473,19 +389,25 @@ namespace XboxOneControllerTcpClient.ViewModel
                 }
 
                 // Add New Commanded
-                CommandedYawDataPoints.Add(new DataPoint() { Y = CommandedYaw });
-                CommandedThrottleDataPoints.Add(new DataPoint() { Y = CommandedThrottle });
-                CommandedRollDataPoints.Add(new DataPoint() { Y = CommandedRoll });
-                CommandedPitchDataPoints.Add(new DataPoint() { Y = CommandedPitch });
+                CommandedYawDataPoints.Add(new DataPoint() { Y = CommandedData.Yaw });
+                CommandedThrottleDataPoints.Add(new DataPoint() { Y = CommandedData.Throttle });
+                CommandedRollDataPoints.Add(new DataPoint() { Y = CommandedData.Roll });
+                CommandedPitchDataPoints.Add(new DataPoint() { Y = CommandedData.Pitch });
 
                 // Add New Observed
-                ObservedYawDataPoints.Add(new DataPoint() { Y = ObservedYaw });
-                ObservedThrottleDataPoints.Add(new DataPoint() { Y = ObservedThrottle });
-                ObservedRollDataPoints.Add(new DataPoint() { Y = ObservedRoll });
-                ObservedPitchDataPoints.Add(new DataPoint() { Y = ObservedPitch });
+                ObservedYawDataPoints.Add(new DataPoint() { Y = ObservedData.Yaw });
+                ObservedThrottleDataPoints.Add(new DataPoint() { Y = ObservedData.Throttle });
+                ObservedRollDataPoints.Add(new DataPoint() { Y = ObservedData.Roll });
+                ObservedPitchDataPoints.Add(new DataPoint() { Y = ObservedData.Pitch });
 
                 // Increment the number of Points added to Chart
                 _numberOfPointsAddedToChart++;
+            }
+
+            // Notify Update
+            for (int i = 0; i < FlightStateDataViewModels.Count; i++)
+            {
+                FlightStateDataViewModels[i].NotifyValuesChanged();
             }
         }
         
@@ -566,6 +488,6 @@ namespace XboxOneControllerTcpClient.ViewModel
         private int _timeSinceLastChartUpdateMs;
         private int _timeSinceLastServerUpdateMs;
         private int _frequencyToUpdateServerWithNewFlighDataMs;
-
+        private List<FlightStateDataViewModel> _flightStateDataViewModels;
     }
 }
