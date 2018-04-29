@@ -17,7 +17,7 @@ imu = IMU.IMU()
 #gps = GPS.GPS()
 
 # Create Camera
-camera = PiCamera()
+#camera = PiCamera()
 
 # Create Quadcopter
 quad = Quadcopter.Quadcopter()
@@ -80,7 +80,7 @@ while running:
     oRoll = cRoll - 0.0287
     oPitch = cPitch - 0.0321
     oThrottle = quad.get_scaled_thrust()    
-    #oArmed = quad.get_is_armed()
+    oArmed = quad.get_is_armed()
 
     # Update Observed Values in Server
     Server.observed['Armed'] = oArmed
@@ -163,23 +163,25 @@ while running:
     oThrottleError = throttlePID.getError()
     
     # Arm if Commanded
-    if (cArm):
+    if (cArm and not oArmed):
         # Arm
-        oArmed = True
-        #quad.arm()
+        quad.arm()
         
-    elif (oArmed):
+        # Recall it is armed
+        oArmed = True
+    # Disarm if no longer commanded as Armed
+    elif (oArmed and not cArm):
         # Stop
         oArmed = False
-        #quad.stop()
+        quad.stop()
         
     # Check if User Demanded to Stop Running
     running = (not Server.commands['Exit'])
 
     # if no longer running, stop motors
     if (not running):
-        pass
-        #quad.stop()
+        #pass
+        quad.stop()
     
     # Sleep for 1 Second
     time.sleep(1)
