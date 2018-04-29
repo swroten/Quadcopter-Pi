@@ -19,6 +19,10 @@ imu = IMU.IMU()
 quad = Quadcopter.Quadcopter()
 
 # Create Reference to PID Variables
+cYaw = 0.0
+cRoll = 0.0
+cPitch = 0.0
+cThrottle = 0.0
 cYawKi = 0.05
 cYawKp = 0.10
 cYawKd = 0.05 
@@ -65,10 +69,13 @@ while running:
     imu.update()
 
     # Get Observed Values    
-    oRoll = imu.get_scaled_roll()
-    oPitch = imu.get_scaled_pitch()
-    oYaw = imu.get_scaled_yaw()
-    oThrottle = quad.get_scaled_throttle()    
+    #oYaw = imu.get_scaled_yaw()
+    #oRoll = imu.get_scaled_roll()
+    #oPitch = imu.get_scaled_pitch()
+    oYaw = cYaw - 0.0109
+    oRoll = cRoll - 0.0287
+    oPitch = cPitch - 0.0321
+    oThrottle = quad.get_scaled_thrust()    
     #oArmed = quad.get_is_armed()
 
     # Update Observed Values in Server
@@ -130,20 +137,20 @@ while running:
     
     throttlePID.setProportionalConstant(cThrottleKp)
     throttlePID.setIntegralConstant(cThrottleKi)
-    throttlePID.setDerivativeConstant(cThrottleKd)
+    throttlePID.setDerivativeConstant(cThrottleKd) 
     
     # Update all of the PID Loops
+    yawOutput = yawPID.update(cYaw, oYaw)
     rollOutput = rollPID.update(cRoll, oRoll)
     pitchOutput = pitchPID.update(cPitch, oPitch)
-    yawOutput = yawPID.update(cYaw, oYaw)
-    throttleOutput = throttlePID.update(cThrottle, oThrottle)
+    throttleOutput = throttlePID.update(abs(cThrottle), oThrottle)
     
     # Print Demanded Output
     #print("Demanded Output -> Roll: {0:0.2F}, Pitch: {1:0.2F}, Yaw: {2:0.2F}, Thrust: {3:0.2F}".format(
     #    rollOutput, pitchOutput, yawOutput, throttleOutput))
     
     # Step Motors in response to Demanded Output
-    quad.process_flight_states(throttleOutput, rollOutput, pitchOutput, throttleOutput)
+    quad.process_flight_states(throttleOutput, rollOutput, pitchOutput, yawOutput)
 
     # Get  Updated PID Error Values
     oRollError = rollPID.getError()
@@ -167,10 +174,14 @@ while running:
 
     # if no longer running, stop motors
     if (not running):
-        quad.stop()
+        pass
+        #quad.stop()
     
-    # Sleep for 1 Second
+    # Sleep for 5 Second
     time.sleep(1)
+
+    # Print Line
+    print
 
 # Close Program
 print('Program Exiting...')
