@@ -131,9 +131,10 @@
                             <TextBlock Grid.Column="0" 
                                        Text="{Binding State}"
                                        HorizontalAlignment="Center" />
-                            <TextBlock Grid.Column="1" 
-                                       Text="{Binding Commanded}"
-                                       HorizontalAlignment="Center"  />
+                            <TextBox Grid.Column="1" 
+                                     BorderThickness="0"
+                                     Text="{Binding Commanded, Mode=TwoWay}"
+                                     HorizontalAlignment="Center"  />
                             <TextBlock Grid.Column="2" 
                                        Text="{Binding Observed}"
                                        HorizontalAlignment="Center"  />

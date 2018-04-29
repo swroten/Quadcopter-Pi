@@ -31,10 +31,10 @@ namespace XboxOneControllerTcpClient.ViewModel
             _commandedData = new Commanded();
             FlightStateDataViewModels = new List<FlightStateDataViewModel>()
             {
-                new FlightStateDataViewModel(FlightStates.Roll, _commandedData, _observedData) { cKi = 0.05, cKp = 0.1, cKd = 0.05 },
-                new FlightStateDataViewModel(FlightStates.Pitch, _commandedData, _observedData) { cKi = 0.05, cKp = 0.1, cKd = 0.05 },
-                new FlightStateDataViewModel(FlightStates.Yaw, _commandedData, _observedData) { cKi = 0.05, cKp = 0.1, cKd = 0.05 },
-                new FlightStateDataViewModel(FlightStates.Throttle, _commandedData, _observedData) { cKi = 0.0, cKp = 0.1, cKd = 0.0 }
+                new FlightStateDataViewModel(FlightStates.Roll, _commandedData, _observedData) {  cKp = 0.001, cKi = 0.0001, cKd = 0.00005 },
+                new FlightStateDataViewModel(FlightStates.Pitch, _commandedData, _observedData) { cKp = 0.001, cKi = 0.0001, cKd = 0.00005 },
+                new FlightStateDataViewModel(FlightStates.Yaw, _commandedData, _observedData) { cKp = 0.001, cKi = 0.0001, cKd = 0.00005 },
+                new FlightStateDataViewModel(FlightStates.Throttle, _commandedData, _observedData) { cKp = 0.1, cKi = 0.05, cKd = 0.0 }
             };
 
             // Set Initial PID Constants
@@ -82,7 +82,7 @@ namespace XboxOneControllerTcpClient.ViewModel
         {
             get
             {
-                return Math.Round((_leftThumbStickX - _tareLeftThumbStickX), 1);
+                return Math.Round((_leftThumbStickX), 2);
             }
             set
             {
@@ -95,7 +95,7 @@ namespace XboxOneControllerTcpClient.ViewModel
         {
             get
             {
-                return Math.Round((_leftThumbStickY - _tareLeftThumbStickY), 1);
+                return Math.Round((_leftThumbStickY), 2);
             }
             set
             {
@@ -108,7 +108,7 @@ namespace XboxOneControllerTcpClient.ViewModel
         {
             get
             {
-                return Math.Round((_rightThumbStickX - _tareRightThumbStickX), 1);
+                return Math.Round((_rightThumbStickX), 2);
             }
             set
             {
@@ -121,7 +121,7 @@ namespace XboxOneControllerTcpClient.ViewModel
         {
             get
             {
-                return Math.Round((_rightThumbStickY - _tareRightThumbStickY), 1);
+                return Math.Round((_rightThumbStickY), 2);
             }
             set
             {
@@ -278,6 +278,9 @@ namespace XboxOneControllerTcpClient.ViewModel
 
         private void ProcessCommand(GamepadReading reading)
         {
+            // Check if Exit has been Demanded
+            CommandedData.Exit = (reading.Buttons.HasFlag(GamepadButtons.Y) || (CommandedData.Exit));
+
             // Get Left Thumb Stick Values
             LeftThumbStickX = reading.LeftThumbstickX;
             LeftThumbStickY = reading.LeftThumbstickY;
@@ -289,44 +292,13 @@ namespace XboxOneControllerTcpClient.ViewModel
             // Get Trigger Values
             LeftTriggerValue = reading.LeftTrigger;
             RightTriggerValue = reading.RightTrigger;
-
-            // Step through each Known Gamepad Button and Determine if it is selected
-            foreach (GamepadButtons button in KnownGamepadButtons)
-            {
-                // Check if Button Clicked
-                if (reading.Buttons.HasFlag(button))
-                {
-                    // Send Message
-                    ReceivedCommands.Insert(0, new Message($"Button '{button}' was Pressed..."));
-                }
-            }
-
-            // Use Start Button to Reset Chart
-            if (reading.Buttons.HasFlag(GamepadButtons.Menu))
-            {
-                // Reset Number of Points Added
-                _numberOfPointsAddedToChart = 0;
-
-                // Reset All Commanded
-                CommandedYawDataPoints.Clear();
-                CommandedRollDataPoints.Clear();
-                CommandedPitchDataPoints.Clear();
-                CommandedThrottleDataPoints.Clear();
-
-                // Reset All Observed
-                ObservedYawDataPoints.Clear();
-                ObservedRollDataPoints.Clear();
-                ObservedPitchDataPoints.Clear();
-                ObservedThrottleDataPoints.Clear();
-            }
-
-            // Use View Button Print all Recorded values to CSV File
-            if (reading.Buttons.HasFlag(GamepadButtons.View) && (!_isPrinting))
-            {
-                // Print data
-                PrintData();
-            }
             
+            // Update Commanded Flight Data
+            // CommandedData.Yaw = LeftThumbStickX;
+            // CommandedData.Throttle = LeftThumbStickY;
+            // CommandedData.Roll = RightThumbStickX;
+            // CommandedData.Pitch = RightThumbStickY;
+                   
             // Disarm is B is Pressed and it is currently Armed
             if (reading.Buttons.HasFlag(GamepadButtons.B) && CommandedArmed)
             {
@@ -338,15 +310,41 @@ namespace XboxOneControllerTcpClient.ViewModel
                 CommandedArmed = true;
             }
 
-            // Check if Exit has been Demanded
-            CommandedData.Exit = (reading.Buttons.HasFlag(GamepadButtons.Y) || (CommandedData.Exit));            
+            // Check if D-PAD Up / Down / Left / Right Selected
+            if (reading.Buttons.HasFlag(GamepadButtons.DPadUp))
+            {
+                CommandedData.ThrottleTrim += 0.01;
+            }
+            else if (reading.Buttons.HasFlag(GamepadButtons.DPadDown))
+            {
+                CommandedData.ThrottleTrim -= 0.01;
+            }
+            else if (reading.Buttons.HasFlag(GamepadButtons.DPadLeft))
+            {
+                CommandedData.YawTrim -= 0.01;
+            }
+            else if (reading.Buttons.HasFlag(GamepadButtons.DPadRight))
+            {
+                CommandedData.YawTrim += 0.01;
+            }
 
-            // Update Commanded Flight Data
-            CommandedData.Yaw = LeftThumbStickX;
-            CommandedData.Throttle = LeftThumbStickY;
-            CommandedData.Roll = RightThumbStickX;
-            CommandedData.Pitch = RightThumbStickY;
-
+            if (reading.Buttons.HasFlag(GamepadButtons.LeftShoulder))
+            {
+                CommandedData.RollTrim -= 0.01;
+            }
+            else if (reading.Buttons.HasFlag(GamepadButtons.RightShoulder))
+            {
+                CommandedData.RollTrim += 0.01;
+            }
+            else if (LeftTriggerValue > 0)
+            {
+                CommandedData.PitchTrim -= 0.01;
+            }
+            else if (RightTriggerValue > 0)
+            {
+                CommandedData.PitchTrim += 0.01;
+            }
+            
             // Accumulate time
             _timeSinceLastChartUpdateMs += _gatherMessageFrequencyMs;
             _timeSinceLastServerUpdateMs += _gatherMessageFrequencyMs;
@@ -361,6 +359,16 @@ namespace XboxOneControllerTcpClient.ViewModel
                 ObservedData = _myRestClient.Update(_observedData, _commandedData).Result;
             }
 
+            // Notify Update
+            for (int i = 0; i < FlightStateDataViewModels.Count; i++)
+            {
+                // Update Reference
+                FlightStateDataViewModels[i].ObservedData = ObservedData;
+
+                // Notify of Update
+                FlightStateDataViewModels[i].NotifyValuesChanged();
+            }
+            
             // Check if enough time has accumlated to post a new data point to chart
             if (_timeSinceLastChartUpdateMs > _frequencyOfChartUpdateMs)
             {
@@ -399,14 +407,30 @@ namespace XboxOneControllerTcpClient.ViewModel
                 _numberOfPointsAddedToChart++;
             }
 
-            // Notify Update
-            for (int i = 0; i < FlightStateDataViewModels.Count; i++)
+            // Use Start Button to Reset Chart
+            if (reading.Buttons.HasFlag(GamepadButtons.Menu))
             {
-                // Update Reference
-                FlightStateDataViewModels[i].ObservedData = ObservedData;
+                // Reset Number of Points Added
+                _numberOfPointsAddedToChart = 0;
 
-                // Notify of Update
-                FlightStateDataViewModels[i].NotifyValuesChanged();
+                // Reset All Commanded
+                CommandedYawDataPoints.Clear();
+                CommandedRollDataPoints.Clear();
+                CommandedPitchDataPoints.Clear();
+                CommandedThrottleDataPoints.Clear();
+
+                // Reset All Observed
+                ObservedYawDataPoints.Clear();
+                ObservedRollDataPoints.Clear();
+                ObservedPitchDataPoints.Clear();
+                ObservedThrottleDataPoints.Clear();
+            }
+
+            // Use View Button Print all Recorded values to CSV File
+            if (reading.Buttons.HasFlag(GamepadButtons.View) && (!_isPrinting))
+            {
+                // Print data
+                PrintData();
             }
         }
         
@@ -463,7 +487,7 @@ namespace XboxOneControllerTcpClient.ViewModel
         #endregion
 
         public event PropertyChangedEventHandler PropertyChanged;
-
+        
         private bool _isRunning;
         private bool _isPrinting;
         private Gamepad _controller;
@@ -477,10 +501,6 @@ namespace XboxOneControllerTcpClient.ViewModel
         private double _leftTriggerValue;
         private double _rightTriggerValue;
         private MyRestClient _myRestClient;
-        private double _tareLeftThumbStickX;
-        private double _tareLeftThumbStickY;
-        private double _tareRightThumbStickX;
-        private double _tareRightThumbStickY;
         private int _gatherMessageFrequencyMs;
         private int _frequencyOfChartUpdateMs;
         private int _numberOfPointsAddedToChart;

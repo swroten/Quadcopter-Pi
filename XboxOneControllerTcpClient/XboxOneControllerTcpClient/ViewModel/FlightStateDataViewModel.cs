@@ -41,6 +41,26 @@ namespace XboxOneControllerTcpClient.ViewModel
                 // return
                 return commanded;
             }
+            set
+            {
+                // Switch on State
+                switch (State)
+                {
+                    case FlightStates.Roll:
+                        CommandedData.Roll = value;
+                        break;
+                    case FlightStates.Pitch:
+                        CommandedData.Pitch = value;
+                        break;
+                    case FlightStates.Yaw:
+                        CommandedData.Yaw = value;
+                        break;
+                    case FlightStates.Throttle:
+                        CommandedData.Throttle = value;
+                        break;
+                }
+                OnPropertyChanged("Commanded");
+            }
         }
         public double Observed
         {
@@ -399,7 +419,7 @@ namespace XboxOneControllerTcpClient.ViewModel
 
         public void NotifyValuesChanged()
         {
-            OnPropertyChanged("Commanded");
+            //OnPropertyChanged("Commanded");
             OnPropertyChanged("Observed");
             OnPropertyChanged("oKp");
             OnPropertyChanged("oKi");
