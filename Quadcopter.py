@@ -20,7 +20,7 @@ import pigpio
 class Quadcopter:
 
     # Initialize
-    def __init__(self):
+    def __init__(self):        
         # Set as disarmed
         self.armed = False
         
@@ -66,11 +66,11 @@ class Quadcopter:
         self.BackLeftMaximumPulseWidth = 1719
         
         # Get Variable for Setting Pulses
-        self.pi = pigpio.pi();
-        self.pi.set_servo_pulsewidth(self.FrontRight, 0) 
-        self.pi.set_servo_pulsewidth(self.FrontLeft, 0) 
-        self.pi.set_servo_pulsewidth(self.BackRight, 0)
-        self.pi.set_servo_pulsewidth(self.BackLeft, 0) 
+        #self.pi = pigpio.pi();
+        #self.pi.set_servo_pulsewidth(self.FrontRight, 0) 
+        #self.pi.set_servo_pulsewidth(self.FrontLeft, 0) 
+        #self.pi.set_servo_pulsewidth(self.BackRight, 0)
+        #self.pi.set_servo_pulsewidth(self.BackLeft, 0) 
 
         # Create Current Variables for Pulse Width
         self.StepRate = 0.05
@@ -150,11 +150,11 @@ class Quadcopter:
 
     #This will stop every action your Pi is performing for ESC of course.        
     def stop(self): 
-        pi.set_servo_pulsewidth(self.FrontRight, 0)
-        pi.set_servo_pulsewidth(self.FrontLeft, 0)
-        pi.set_servo_pulsewidth(self.BackLeft, 0)
-        pi.set_servo_pulsewidth(self.BackRight, 0)
-        pi.stop()
+        self.pi.set_servo_pulsewidth(self.FrontRight, 0)
+        self.pi.set_servo_pulsewidth(self.FrontLeft, 0)
+        self.pi.set_servo_pulsewidth(self.BackLeft, 0)
+        self.pi.set_servo_pulsewidth(self.BackRight, 0)
+        self.pi.stop()
         self.armed = False
 
     # Process Commanded States versus Observed States to Step Motors
@@ -196,22 +196,22 @@ class Quadcopter:
         # Handle Front Left
         self.FrontLeftScaledPulseWidth = max(self.MinimumSignal, min(self.MaximumSignal, frontLeftDemandedOutput))
         self.FrontLeftPulseWidth = self.scale(self.FrontLeftScaledPulseWidth, self.MinimumSignal, self.MaximumSignal, self.FrontLeftMinimumPulseWidth, self.FrontLeftMaximumPulseWidth)
-        #pi.set_servo_pulsewidth(self.FrontLeft, self.FrontLeftPulseWidth)
+        #self.pi.set_servo_pulsewidth(self.FrontLeft, self.FrontLeftPulseWidth)
 
         # Handle Front Right
         self.FrontRightScaledPulseWidth = max(self.MinimumSignal, min(self.MaximumSignal, frontRightDemandedOutput))
         self.FrontRightPulseWidth = self.scale(self.FrontRightScaledPulseWidth, self.MinimumSignal, self.MaximumSignal, self.FrontRightMinimumPulseWidth, self.FrontRightMaximumPulseWidth)
-        #pi.set_servo_pulsewidth(self.FrontRight, self.FrontRightPulseWidth)
+        #self.pi.set_servo_pulsewidth(self.FrontRight, self.FrontRightPulseWidth)
         
         # Handle Back Left
         self.BackLeftScaledPulseWidth = max(self.MinimumSignal, min(self.MaximumSignal, backLeftDemandedOutput))
         self.BackLeftPulseWidth = self.scale(self.BackLeftScaledPulseWidth, self.MinimumSignal, self.MaximumSignal, self.BackLeftMinimumPulseWidth, self.BackLeftMaximumPulseWidth)
-        #pi.set_servo_pulsewidth(self.BackLeft, self.BackLeftPulseWidth)
+        #self.pi.set_servo_pulsewidth(self.BackLeft, self.BackLeftPulseWidth)
         
         # Handle Back Right
         self.BackRightScaledPulseWidth = max(self.MinimumSignal, min(self.MaximumSignal, backRightDemandedOutput))
         self.BackRightPulseWidth = self.scale(self.BackRightScaledPulseWidth, self.MinimumSignal, self.MaximumSignal, self.BackRightMinimumPulseWidth, self.BackRightMaximumPulseWidth)
-        #pi.set_servo_pulsewidth(self.BackRight, self.BackRightPulseWidth)
+        #self.pi.set_servo_pulsewidth(self.BackRight, self.BackRightPulseWidth)
 
 
         print("RPM -> FL: {0:0.2F}, FR: {1:0.2F}, BL: {2:0.2F}, BR: {3:0.2F}".format(
@@ -243,28 +243,28 @@ class Quadcopter:
     # Arming Procedure for all ESC    
     def arm(self): 
         # Set to 0
-        pi.set_servo_pulsewidth(self.FrontLeft, 0) 
-        pi.set_servo_pulsewidth(self.FrontRight, 0) 
-        pi.set_servo_pulsewidth(self.BackLeft, 0) 
-        pi.set_servo_pulsewidth(self.BackRight, 0) 
+        self.pi.set_servo_pulsewidth(self.FrontLeft, 0) 
+        self.pi.set_servo_pulsewidth(self.FrontRight, 0) 
+        self.pi.set_servo_pulsewidth(self.BackLeft, 0) 
+        self.pi.set_servo_pulsewidth(self.BackRight, 0) 
 
         # Wait 1 Second
         time.sleep(1) 
 
         # Set to Maximum Pulse Width
-        pi.set_servo_pulsewidth(self.FrontLeft, MaximumPulseWidth) 
-        pi.set_servo_pulsewidth(self.FrontRight, MaximumPulseWidth) 
-        pi.set_servo_pulsewidth(self.BackLeft, MaximumPulseWidth) 
-        pi.set_servo_pulsewidth(self.BackRight, MaximumPulseWidth) 
+        self.pi.set_servo_pulsewidth(self.FrontLeft, self.MaximumPulseWidth) 
+        self.pi.set_servo_pulsewidth(self.FrontRight, self.MaximumPulseWidth) 
+        self.pi.set_servo_pulsewidth(self.BackLeft, self.MaximumPulseWidth) 
+        self.pi.set_servo_pulsewidth(self.BackRight, self.MaximumPulseWidth) 
         
         # Wait 1 Second
         time.sleep(1) 
         
         # Set to Minimum Pulse Width
-        pi.set_servo_pulsewidth(self.FrontLeft, MinimumPulseWidth) 
-        pi.set_servo_pulsewidth(self.FrontRight, MinimumPulseWidth) 
-        pi.set_servo_pulsewidth(self.BackLeft, MinimumPulseWidth) 
-        pi.set_servo_pulsewidth(self.BackRight, MinimumPulseWidth) 
+        self.pi.set_servo_pulsewidth(self.FrontLeft, self.MinimumPulseWidth) 
+        self.pi.set_servo_pulsewidth(self.FrontRight, self.MinimumPulseWidth) 
+        self.pi.set_servo_pulsewidth(self.BackLeft, self.MinimumPulseWidth) 
+        self.pi.set_servo_pulsewidth(self.BackRight, self.MinimumPulseWidth) 
         
         # Wait 1 Second
         time.sleep(1)
