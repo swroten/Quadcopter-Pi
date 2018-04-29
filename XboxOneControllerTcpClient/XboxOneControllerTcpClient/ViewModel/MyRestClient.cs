@@ -72,15 +72,15 @@ namespace XboxOneControllerTcpClient.ViewModel
 
         private async Task<Commanded> UpdateFlightDataAsync(Commanded commandedData)
         {
-            string flightDataAsString;
+            //string flightDataAsString;
             HttpResponseMessage response = await _client.PutAsJsonAsync($"/commands/{commandedData.Id}", commandedData).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
 
             // Get Flight Data as string
-            flightDataAsString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            //flightDataAsString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             // Deserialize
-            commandedData = JsonConvert.DeserializeObject<Commanded>(flightDataAsString);
+            //commandedData = JsonConvert.DeserializeObject<Commanded>(flightDataAsString);
 
             // Return FlightData
             return commandedData;
