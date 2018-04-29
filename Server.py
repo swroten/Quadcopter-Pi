@@ -19,6 +19,7 @@ commands = {
     'Id': 0,
     'Armed': False,
     'Exit': False,
+    'Snap': False,
     'Roll': 0.0,
     'RollKi':0.0,
     'RollKp':0.0,
@@ -85,6 +86,7 @@ def update_commands(commands_id):
         if ((not request.json) or
             ('Exit' in request.json and type(request.json['Exit']) is not bool) or
             ('Armed' in request.json and type(request.json['Armed']) is not bool) or
+            ('Snap' in request.json and type(request.json['Armed']) is not bool) or
             ('Roll' in request.json and type(request.json['Roll']) is not float) or
             ('RollKi' in request.json and type(request.json['RollKi']) is not float) or
             ('RollKp' in request.json and type(request.json['RollKp']) is not float) or
@@ -102,6 +104,7 @@ def update_commands(commands_id):
             
         commands['Exit'] = request.json.get('Exit', commands['Exit'])
         commands['Armed'] = request.json.get('Armed', commands['Armed'])
+        commands['Snap'] = request.json.get('Snap', commands['Snap'])
         commands['Roll'] = request.json.get('Roll', commands['Roll'])
         commands['RollKi'] = request.json.get('RollKi', commands['RollKi'])
         commands['RollKp'] = request.json.get('RollKp', commands['RollKp'])

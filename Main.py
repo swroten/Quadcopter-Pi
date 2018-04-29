@@ -6,6 +6,7 @@ import GPS
 import Server
 import PID
 import time
+from picamera import PiCamera
 from threading import Thread
 #import thread
 
@@ -14,6 +15,9 @@ imu = IMU.IMU()
 
 # Create GPS Class
 #gps = GPS.GPS()
+
+# Create Camera
+camera = PiCamera()
 
 # Create Quadcopter
 quad = Quadcopter.Quadcopter()
@@ -177,7 +181,7 @@ while running:
         pass
         #quad.stop()
     
-    # Sleep for 5 Second
+    # Sleep for 1 Second
     time.sleep(1)
 
     # Print Line
