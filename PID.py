@@ -21,7 +21,7 @@ class PID:
         self.last_time = time.time()
         self.last_error = 0.0
         self.last_derivative = 0.0
-        self.filter = 0.0
+        self.filter = 0.4
 
     def getError(self):
         return self.error
@@ -57,7 +57,7 @@ class PID:
         self.proportional_term = (self.kp * self.error)
 
         # Compute Integral Term
-        self.integral_term = (self.integral_term + (self.ki * self.error * self.dt))
+        self.integral_term += (self.ki * self.error * self.dt)
 
         # Make sure Integral Term is within Min and Max
         if (self.integral_term < self.min_signal):
@@ -75,12 +75,6 @@ class PID:
         
         # Compute Output
         self.output = (self.proportional_term + self.integral_term + self.derivative_term)
-        
-        # Make sure Computed Output is within Min and Max
-        if (self.output < self.min_signal):
-            self.output = self.min_signal
-        elif (self.output > self.max_signal):
-            self.output = self.max_signal
 
         # Return Output
         return self.output

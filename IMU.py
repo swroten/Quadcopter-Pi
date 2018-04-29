@@ -52,8 +52,11 @@ class IMU:
         return (limitMin + (((valueIn - baseMin) * (limitMax - limitMin)) / (baseMax - baseMin)))
         
     def update(self):
-        # Read the Euler angles for heading, roll, pitch (all in degrees).
-        self.heading, self.roll, self.pitch = self.bno.read_euler()
+        try:
+            # Read the Euler angles for heading, roll, pitch (all in degrees).
+            self.heading, self.roll, self.pitch = self.bno.read_euler()
+        except:
+            pass
 
     def get_raw_roll(self):
         return self.roll
