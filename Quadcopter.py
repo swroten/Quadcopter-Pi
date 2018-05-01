@@ -50,9 +50,6 @@ class Quadcopter:
         self.MinimumThrust = 0.0
         self.MaximumThrust = 4 * (0.000000124736 * self.MaximumRPM * self.MaximumRPM)
 
-        # Set Thrust Deadband to 5% of Maximum Thrust
-        self.DEADBAND = 0.05 * (self.MaximumThrust - self.MinimumThrust)
- 
         # Set the Calibrated Motor PulseWidth Minimum
         self.FrontRightMinimumPulseWidth = 1230
         self.FrontLeftMinimumPulseWidth = 1265
@@ -73,7 +70,6 @@ class Quadcopter:
         self.pi.set_servo_pulsewidth(self.BackLeft, 0) 
 
         # Create Current Variables for Pulse Width
-        self.StepRate = 0.05
         self.FrontRightPulseWidth = 0
         self.FrontLeftPulseWidth = 0
         self.BackRightPulseWidth = 0
@@ -85,23 +81,14 @@ class Quadcopter:
         self.BackRightScaledPulseWidth = 0
         self.BackLeftScaledPulseWidth = 0
 
-        # Recall Last Throttle
-        self.last_raw_throttle = 0.0
-
         # Create Variables for RPM
         self.FrontRightRPM = 0
         self.FrontLeftRPM = 0
         self.BackRightRPM = 0
         self.BackLeftRPM = 0
 
-        # Observed Thrust
-        self.ObservedThrust = 0.0
-        self.dThrottle = 0.0
-
-        # Keep Track of Commanded Throttle
-        self.DeltaCommand = 0
-        self.CommandedThrottle = 0
-        self.CommandedThrottleLastPass = 0
+        # Set Minimum Throttle Threshold
+        self.minimum_throttle = 0.01
 
     # Get Whether Armed
     def get_is_armed(self):
@@ -130,15 +117,8 @@ class Quadcopter:
         back_left_thrust = self.compute_motor_thrust(self.BackLeftRPM)
         back_right_thrust = self.compute_motor_thrust(self.BackRightRPM)
 
-        # Get the resultant vector
-        self.ObservedThrust = (front_left_thrust +
-                               front_right_thrust + 
-                               back_left_thrust + 
-                               back_right_thrust)
-
-        # Return
-        return self.ObservedThrust
-
+        # Return resultant vector
+        return (front_left_thrust + front_right_thrust + back_left_thrust + back_right_thrust)
 
     # Get Observed Raw Throttle
     def get_raw_thrust(self):
@@ -149,95 +129,63 @@ class Quadcopter:
         return self.scale(self.get_raw_thrust(), self.MinimumThrust, self.MaximumThrust, 0.0, self.OutputMaximum)
 
     #This will stop every action your Pi is performing for ESC of course.        
-    def stop(self): 
-        self.pi.set_servo_pulsewidth(self.FrontRight, 0)
-        self.pi.set_servo_pulsewidth(self.FrontLeft, 0)
-        self.pi.set_servo_pulsewidth(self.BackLeft, 0)
-        self.pi.set_servo_pulsewidth(self.BackRight, 0)
+    def stop(self):
+        # if Armed, set pulse width to 0
+        if (self.armed):
+            self.pi.set_servo_pulsewidth(self.FrontRight, 0)
+            self.pi.set_servo_pulsewidth(self.FrontLeft, 0)
+            self.pi.set_servo_pulsewidth(self.BackLeft, 0)
+            self.pi.set_servo_pulsewidth(self.BackRight, 0)
+            
+        # Disable any Further Signals
         self.pi.stop()
+
+        # Clear Armed Flag
         self.armed = False
 
+    # Print RPM
+    def print_rpm_for_motors(self):
+        print("RPM -> FL: {0:0.2F}, FR: {1:0.2F}, BL: {2:0.2F}, BR: {3:0.2F}".format(self.FrontLeftRPM, self.FrontRightRPM, self.BackLeftRPM, self.BackRightRPM))   
+
     # Process Commanded States versus Observed States to Step Motors
-    def process_flight_states(self, throttleOutput, rollOutput, pitchOutput, yawOutput):
+    def process_flight_states(self, throttleOutput, rollOutput, pitchOutput, yawOutput):       
 
-        # Convert Observed Thrust into Observed Throttle
-        #oThrottle = self.get_scaled_thrust()
-        #scaledThrottle = abs(cThrottle)
+        # Only Perform standard flight if above minimum throttle threshold
+        if (throttleOutput >  self.minimum_throttle):
+            # Handle Front Left
+            frontLeftDemandedOutput = self.scale((throttleOutput + rollOutput - pitchOutput - yawOutput), 0.0, self.OutputMaximum, self.MinimumSignal, self.MaximumSignal)
+            self.FrontLeftScaledPulseWidth = max(self.MinimumSignal, min(self.MaximumSignal, frontLeftDemandedOutput))
+            self.FrontLeftPulseWidth = self.scale(self.FrontLeftScaledPulseWidth, self.MinimumSignal, self.MaximumSignal, self.FrontLeftMinimumPulseWidth, self.FrontLeftMaximumPulseWidth)
 
-        # Get Error
-        #error = abs(scaledThrottle - oThrottle)
-
-        # Step based on Error
-        #if (scaledThrottle < oThrottle):
-        #    self.dThrottle -= (self.StepRate * error)
-        #elif (scaledThrottle > oThrottle):
-        #    self.dThrottle += (self.StepRate * error)
-
-        # Make sure command doesn't go below minimum or above maximum
-        #if (self.dThrottle < 0):
-        #    self.dThrottle = 0
-        #elif (self.dThrottle > self.OutputMaximum):
-        #    self.dThrottle = self.OutputMaximum
-                    
-        #print("Throttle -> C: {0:0.2F}, O: {1:0.2F}, D: {2:0.2F}".format(scaledThrottle, oThrottle, self.dThrottle))
-
-        # Get Demanded Output
-        #frontLeftDemandedOutput =  self.scale(self.dThrottle, 0.0, self.OutputMaximum, self.MinimumSignal, self.MaximumSignal)
-        #frontRightDemandedOutput =  self.scale(self.dThrottle, 0.0, self.OutputMaximum, self.MinimumSignal, self.MaximumSignal)
-        #backLeftDemandedOutput =  self.scale(self.dThrottle, 0.0, self.OutputMaximum, self.MinimumSignal, self.MaximumSignal)
-        #backRightDemandedOutput =  self.scale(self.dThrottle, 0.0, self.OutputMaximum, self.MinimumSignal, self.MaximumSignal)
-
-        # Get Demanded Output
-        frontLeftDemandedOutput = self.scale((throttleOutput + rollOutput - pitchOutput - yawOutput), 0.0, self.OutputMaximum, self.MinimumSignal, self.MaximumSignal)
-        frontRightDemandedOutput = self.scale((throttleOutput - rollOutput - pitchOutput + yawOutput), 0.0, self.OutputMaximum, self.MinimumSignal, self.MaximumSignal)
-        backLeftDemandedOutput = self.scale((throttleOutput + rollOutput + pitchOutput + yawOutput), 0.0, self.OutputMaximum, self.MinimumSignal, self.MaximumSignal)
-        backRightDemandedOutput = self.scale((throttleOutput - rollOutput + pitchOutput - yawOutput), 0.0, self.OutputMaximum, self.MinimumSignal, self.MaximumSignal)
+            # Handle Front Right
+            frontRightDemandedOutput = self.scale((throttleOutput - rollOutput - pitchOutput + yawOutput), 0.0, self.OutputMaximum, self.MinimumSignal, self.MaximumSignal)
+            self.FrontRightScaledPulseWidth = max(self.MinimumSignal, min(self.MaximumSignal, frontRightDemandedOutput))
+            self.FrontRightPulseWidth = self.scale(self.FrontRightScaledPulseWidth, self.MinimumSignal, self.MaximumSignal, self.FrontRightMinimumPulseWidth, self.FrontRightMaximumPulseWidth)
+                
+            # Handle Back Left
+            backLeftDemandedOutput = self.scale((throttleOutput + rollOutput + pitchOutput + yawOutput), 0.0, self.OutputMaximum, self.MinimumSignal, self.MaximumSignal)
+            self.BackLeftScaledPulseWidth = max(self.MinimumSignal, min(self.MaximumSignal, backLeftDemandedOutput))
+            self.BackLeftPulseWidth = self.scale(self.BackLeftScaledPulseWidth, self.MinimumSignal, self.MaximumSignal, self.BackLeftMinimumPulseWidth, self.BackLeftMaximumPulseWidth)
+                
+            # Handle Back Right
+            backRightDemandedOutput = self.scale((throttleOutput - rollOutput + pitchOutput - yawOutput), 0.0, self.OutputMaximum, self.MinimumSignal, self.MaximumSignal)
+            self.BackRightScaledPulseWidth = max(self.MinimumSignal, min(self.MaximumSignal, backRightDemandedOutput))
+            self.BackRightPulseWidth = self.scale(self.BackRightScaledPulseWidth, self.MinimumSignal, self.MaximumSignal, self.BackRightMinimumPulseWidth, self.BackRightMaximumPulseWidth)
         
-        # Handle Front Left
-        self.FrontLeftScaledPulseWidth = max(self.MinimumSignal, min(self.MaximumSignal, frontLeftDemandedOutput))
-        self.FrontLeftPulseWidth = self.scale(self.FrontLeftScaledPulseWidth, self.MinimumSignal, self.MaximumSignal, self.FrontLeftMinimumPulseWidth, self.FrontLeftMaximumPulseWidth)
-        self.pi.set_servo_pulsewidth(self.FrontLeft, self.FrontLeftPulseWidth)
-
-        # Handle Front Right
-        self.FrontRightScaledPulseWidth = max(self.MinimumSignal, min(self.MaximumSignal, frontRightDemandedOutput))
-        self.FrontRightPulseWidth = self.scale(self.FrontRightScaledPulseWidth, self.MinimumSignal, self.MaximumSignal, self.FrontRightMinimumPulseWidth, self.FrontRightMaximumPulseWidth)
-        self.pi.set_servo_pulsewidth(self.FrontRight, self.FrontRightPulseWidth)
+            # Set Pulse Width Signal if Motors are Armed
+            if (self.armed):
+                self.pi.set_servo_pulsewidth(self.FrontLeft, self.FrontLeftPulseWidth)
+                self.pi.set_servo_pulsewidth(self.FrontRight, self.FrontRightPulseWidth)
+                self.pi.set_servo_pulsewidth(self.BackLeft, self.BackLeftPulseWidth)
+                self.pi.set_servo_pulsewidth(self.BackRight, self.BackRightPulseWidth)
+        else:
+            # Set Minimum Threshold            
+            self.pi.set_servo_pulsewidth(self.FrontLeft, self.MinimumPulseWidth)
+            self.pi.set_servo_pulsewidth(self.FrontRight, self.MinimumPulseWidth)
+            self.pi.set_servo_pulsewidth(self.BackLeft, self.MinimumPulseWidth)
+            self.pi.set_servo_pulsewidth(self.BackRight, self.MinimumPulseWidth)
         
-        # Handle Back Left
-        self.BackLeftScaledPulseWidth = max(self.MinimumSignal, min(self.MaximumSignal, backLeftDemandedOutput))
-        self.BackLeftPulseWidth = self.scale(self.BackLeftScaledPulseWidth, self.MinimumSignal, self.MaximumSignal, self.BackLeftMinimumPulseWidth, self.BackLeftMaximumPulseWidth)
-        self.pi.set_servo_pulsewidth(self.BackLeft, self.BackLeftPulseWidth)
-        
-        # Handle Back Right
-        self.BackRightScaledPulseWidth = max(self.MinimumSignal, min(self.MaximumSignal, backRightDemandedOutput))
-        self.BackRightPulseWidth = self.scale(self.BackRightScaledPulseWidth, self.MinimumSignal, self.MaximumSignal, self.BackRightMinimumPulseWidth, self.BackRightMaximumPulseWidth)
-        self.pi.set_servo_pulsewidth(self.BackRight, self.BackRightPulseWidth)
-
-        print("RPM -> FL: {0:0.2F}, FR: {1:0.2F}, BL: {2:0.2F}, BR: {3:0.2F}".format(
-        self.FrontLeftRPM,
-        self.FrontRightRPM,
-        self.BackLeftRPM,
-        self.BackRightRPM))        
-
-                    
-        #print("Throttle -> C: {0:0.2F}, O: {1:0.2F}, D: {2:0.2F}".format(cThrottle, oThrottle, self.dThrottle))
-
-        #print("T: {0}, R: {1}, P: {2}, Y: {3}".format(dThrottle, rollOutput, pitchOutput, yawOutput))
-        
-        
-        # Print Pulse Width
-        #print("Demanded Output -> FL: {0:0.2F}, FR: {1:0.2F}, BL: {2:0.2F}, BR: {3:0.2F}".format(
-        #frontLeftDemandedOutput,
-        #frontRightDemandedOutput,
-        #backLeftDemandedOutput,
-        #backRightDemandedOutput))
-
-        # Print Pulse Width
-        #print("Pulse Width     -> FL: {0:0.2F}, FR: {1:0.2F}, BL: {2:0.2F}, BR: {3:0.2F}".format(
-        #self.FrontLeftScaledPulseWidth,
-        #self.FrontRightScaledPulseWidth,
-        #self.BackLeftScaledPulseWidth,
-        #self.BackRightScaledPulseWidth))
+             
         
     # Arming Procedure for all ESC    
     def arm(self): 
@@ -270,3 +218,43 @@ class Quadcopter:
 
         # Set the fact that we are now armed
         self.armed = True
+
+    # Perform Landing Routine
+    def land(self, throttleOutput):
+        # Set landing Flag
+        landing = True
+
+        # Initialize Demanded Throttle
+        dThrottle = throttleOutput
+
+        # Set current throttle output to initial
+        tOut = throttleOutput
+
+        # Set step rate
+        step_rate = 0.01
+
+        # While Landing
+        while (landing):
+            # Decrement current Throttle Output
+            tOut -= step_rate
+
+            # Get the Observed Throttle
+            oThrottle = self.get_scaled_thrust()
+
+            # Compute Error
+            error = abs(tOut - oThrottle)
+
+            # Set Demanded Throttle
+            dThrottle -= (step_rate * error)
+
+            # Make sure that Throttle doesn't fall below 0
+            dThrottle = max(0.0, dThrottle)
+        
+            # Process Flight States
+            self.process_flight_states(dThrottle, 0, 0, 0)
+            
+            # continue landing while demanded throttle isn't at minimum
+            landing = (oThrottle > self.minimum_throttle)
+                
+
+        
