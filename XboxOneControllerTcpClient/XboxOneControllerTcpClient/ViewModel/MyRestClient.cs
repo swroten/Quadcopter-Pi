@@ -47,6 +47,10 @@ namespace XboxOneControllerTcpClient.ViewModel
             }
             catch (Exception e)
             {
+                // Clear Commanded Data Exit because we have disconnected
+                commandedData.Exit = false;
+
+                // Write log message
                 Console.WriteLine(e.Message);
             }
 

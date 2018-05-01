@@ -31,9 +31,9 @@ namespace XboxOneControllerTcpClient.ViewModel
             _commandedData = new Commanded();
             FlightStateDataViewModels = new List<FlightStateDataViewModel>()
             {
-                new FlightStateDataViewModel(FlightStates.Roll, _commandedData, _observedData) {  cKp = 0.001, cKi = 0.0001, cKd = 0.00005 },
-                new FlightStateDataViewModel(FlightStates.Pitch, _commandedData, _observedData) { cKp = 0.001, cKi = 0.0001, cKd = 0.00005 },
-                new FlightStateDataViewModel(FlightStates.Yaw, _commandedData, _observedData) { cKp = 0.001, cKi = 0.0001, cKd = 0.00005 },
+                new FlightStateDataViewModel(FlightStates.Roll, _commandedData, _observedData) {  cKp = 0.0, cKi = 0.0, cKd = 0.0 },
+                new FlightStateDataViewModel(FlightStates.Pitch, _commandedData, _observedData) { cKp = 0.0, cKi = 0.0, cKd = 0.0 },
+                new FlightStateDataViewModel(FlightStates.Yaw, _commandedData, _observedData) { cKp = 0.0, cKi = 0.0, cKd = 0.0 },
                 new FlightStateDataViewModel(FlightStates.Throttle, _commandedData, _observedData) { cKp = 0.1, cKi = 0.05, cKd = 0.0 }
             };
 
@@ -278,7 +278,7 @@ namespace XboxOneControllerTcpClient.ViewModel
 
         private void ProcessCommand(GamepadReading reading)
         {
-            // Check if Exit has been Demanded
+            // Check if Exit has been Demanded            
             CommandedData.Exit = (reading.Buttons.HasFlag(GamepadButtons.Y) || (CommandedData.Exit));
 
             // Get Left Thumb Stick Values
