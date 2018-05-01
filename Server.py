@@ -3,6 +3,7 @@ from Adafruit_BNO055 import BNO055
 from flask import Flask, jsonify, request, abort, make_response
 from flask_httpauth import HTTPBasicAuth
 import logging
+import time
 
 app = Flask(__name__)
 auth = HTTPBasicAuth()
@@ -17,6 +18,7 @@ users = {
 
 commands = {
     'Id': 0,
+    'Time':time.time(),
     'Armed': False,
     'Exit': False,
     'Snap': False,
@@ -40,6 +42,7 @@ commands = {
 
 observed = {
     'Id': 0,
+    'Time':time.time(),
     'Armed': False,
     'Roll': 0.0,
     'RollKi':0.0,
@@ -63,6 +66,8 @@ observed = {
     'ThrottleError':0.0
 }
 
+last_update = time.time()
+
 @app.errorhandler(404)
 def not_found(error):
     return make_response(jsonify({'error': 'Not found'}), 404)
@@ -81,7 +86,7 @@ def index():
 @app.route('/commands/<int:commands_id>', methods=['PUT'])
 @auth.login_required
 def update_commands(commands_id):
-    
+    # Verify Command Id is correct
     if commands['Id'] == commands_id:
         if ((not request.json) or
             ('Exit' in request.json and type(request.json['Exit']) is not bool) or
@@ -102,6 +107,7 @@ def update_commands(commands_id):
             ('Throttle' in request.json and type(request.json['Throttle']) is not float)):
             abort(400)
             
+        commands['Time'] = time.time()
         commands['Exit'] = request.json.get('Exit', commands['Exit'])
         commands['Armed'] = request.json.get('Armed', commands['Armed'])
         commands['Snap'] = request.json.get('Snap', commands['Snap'])
