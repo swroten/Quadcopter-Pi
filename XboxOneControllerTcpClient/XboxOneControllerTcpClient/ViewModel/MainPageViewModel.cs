@@ -34,7 +34,7 @@ namespace XboxOneControllerTcpClient.ViewModel
                 new FlightStateDataViewModel(FlightStates.Roll, _commandedData, _observedData) {  cKp = 0.0, cKi = 0.0, cKd = 0.0 },
                 new FlightStateDataViewModel(FlightStates.Pitch, _commandedData, _observedData) { cKp = 0.0, cKi = 0.0, cKd = 0.0 },
                 new FlightStateDataViewModel(FlightStates.Yaw, _commandedData, _observedData) { cKp = 0.0, cKi = 0.0, cKd = 0.0 },
-                new FlightStateDataViewModel(FlightStates.Throttle, _commandedData, _observedData) { cKp = 0.1, cKi = 0.05, cKd = 0.0 }
+                new FlightStateDataViewModel(FlightStates.Throttle, _commandedData, _observedData) { cKp = 0.2, cKi = 0.2, cKd = 0.0 }
             };
 
             // Set Initial PID Constants
