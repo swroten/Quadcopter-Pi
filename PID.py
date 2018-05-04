@@ -39,6 +39,10 @@ class PID:
     def setSetpoint(self, setpoint):
         self.setpoint = setpoint
 
+    def reset(self):
+        self.integral_term = 0.0
+        self.last_derivative = 0.0
+
     # Perform Update from Current Value
     def update(self, setpoint, current):
         # Update Current Values

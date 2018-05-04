@@ -29,6 +29,10 @@ except:
 # Create Quadcopter
 quad = Quadcopter.Quadcopter()
 
+# Create Variables
+cSnap = False
+cResetError = False
+
 # Create Reference to PID Variables
 cYaw = 0.0
 cRoll = 0.0
@@ -94,19 +98,29 @@ while running:
         # Update Current Observed Values
         imu.update()
 
+        # Get Observed Thurst
+        oThrottle = quad.get_scaled_thrust() 
+
         # Update Flight States
         quad.update(delta_time)
 
-        # Get Observed Values    
-        #oYaw = imu.get_scaled_yaw()
-        #oRoll = imu.get_scaled_roll()
-        #oPitch = imu.get_scaled_pitch()
-        oYaw = cYaw
-        oRoll = cRoll
-        oPitch = cPitch
-        oThrottle = quad.get_scaled_thrust()    
+        # Get if Quad is Armed   
         oArmed = quad.get_is_armed()
 
+        # Get Observed Values
+        if (oArmed):
+            # if we are armed - assume flying
+            #  get roll, pitch, and yaw from IMU
+            oYaw = imu.get_scaled_yaw()
+            oRoll = imu.get_scaled_roll()
+            oPitch = imu.get_scaled_pitch()
+        else:
+            # otherwise - assume in test mode
+            #  get roll, pitch and yaw from Quad
+            oYaw = quad.get_scaled_yaw()
+            oRoll = quad.get_scaled_roll()
+            oPitch = quad.get_scaled_pitch()
+            
         # Update Observed Values in Server
         Server.observed['Armed'] = oArmed
         Server.observed['Yaw'] = oYaw
@@ -132,10 +146,14 @@ while running:
         Server.observed['ThrottleKp'] = cThrottleKp
         Server.observed['ThrottleKi'] = cThrottleKi
         Server.observed['ThrottleKd'] = cThrottleKd
+        Server.observed['ResetError'] = cResetError
+        Server.observed['Snap'] = cSnap
     
         # Get Commanded Values
         cTime = Server.commands['Time']
         cArm = Server.commands['Armed']
+        cSnap = Server.commands['Snap']
+        cResetError = Server.commands['ResetError']
         cRoll = Server.commands['Roll']
         cRollKi = Server.commands['RollKi']
         cRollKp = Server.commands['RollKp']
@@ -152,6 +170,17 @@ while running:
         cThrottleKi = Server.commands['ThrottleKi']
         cThrottleKp = Server.commands['ThrottleKp']
         cThrottleKd = Server.commands['ThrottleKd']
+        
+        # Check if Error Should be Reset on PID
+        if (cResetError):
+            # Reset integral and derivative error
+            rollPID.reset()
+            pitchPID.reset()
+            yawPID.reset()
+            throttlePID.reset()
+
+            # Clear this flag
+            cResetError = False            
 
         # Set Commanded PID Constants
         rollPID.setProportionalConstant(cRollKp)
@@ -205,7 +234,7 @@ while running:
         running = (not Server.commands['Exit'])
 
         # Check if Comm Failure has occurred
-        if ((time.time() - cTime) > comm_loss_threshold):
+        if ((oArmed) and ((time.time() - cTime) > comm_loss_threshold)):
             # Write Line to indicate we are landing
             print("Communication Failure -> Landing...")
             
@@ -230,9 +259,9 @@ while running:
             # Recall this time
             last_time = time.time()
             
-    except:
+    except (Exception, KeyboardInterrupt), e:
         # Write Line to indicate some exception occurred
-        print("Exception ocurred while running -> Landing...")
+        print("Exception ocurred while running '{0}' -> Landing...".format(str(e)))
 
         # Perform Landing Routine
         quad.land(throttleOutput)
