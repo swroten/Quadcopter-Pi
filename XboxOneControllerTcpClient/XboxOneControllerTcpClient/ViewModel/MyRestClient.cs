@@ -13,7 +13,7 @@ namespace XboxOneControllerTcpClient.ViewModel
     {
         // If connected directly: 192.168.10.1
         // If connected via same router and not directly: 10.0.0.104
-        public MyRestClient(string endpointUri = "http://10.0.0.104:5000/")
+        public MyRestClient(string endpointUri = "http://192.168.10.1:5000/")
         {
             _client = new HttpClient
             {                
