@@ -168,16 +168,48 @@
             </ListView>
         </Grid>        
         <Grid Grid.Row="2">
-            <Charting:Chart Margin="5"
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Charting:Chart Grid.Row="0"
+                            Grid.Column="0"
+                            Margin="5"
                             VerticalAlignment="Stretch"
                             HorizontalAlignment="Stretch">
                 <Charting:Chart.Axes>
                     <Charting:DateTimeAxis Orientation="X"
-                                           x:Name="xAxis"
                                            Title="Time"
                                            ShowGridLines="True" />
                     <Charting:LinearAxis Orientation="Y"
-                                         x:Name="yAxis"
+                                         ShowGridLines="True"
+                                         Title="Normalized Value" />
+                </Charting:Chart.Axes>
+                <Charting:LineSeries Title="Observed Throttle"
+                                     IsSelectionEnabled="True" 
+        		                     DependentValueBinding="{Binding Y}"
+        		                     IndependentValueBinding="{Binding X}"
+                                     ItemsSource="{Binding ObservedThrottleDataPoints}" />
+                <Charting:LineSeries Title="Commanded Throttle"
+                                     IsSelectionEnabled="True" 
+        		                     DependentValueBinding="{Binding Y}"
+        		                     IndependentValueBinding="{Binding X}"
+                                     ItemsSource="{Binding CommandedThrottleDataPoints}" />
+            </Charting:Chart>
+            <Charting:Chart Grid.Row="0"
+                            Grid.Column="1"
+                            Margin="5"
+                            VerticalAlignment="Stretch"
+                            HorizontalAlignment="Stretch">
+                <Charting:Chart.Axes>
+                    <Charting:DateTimeAxis Orientation="X"
+                                           Title="Time"
+                                           ShowGridLines="True" />
+                    <Charting:LinearAxis Orientation="Y"
                                          ShowGridLines="True"
                                          Title="Normalized Value" />
                 </Charting:Chart.Axes>
@@ -186,41 +218,59 @@
         		                     DependentValueBinding="{Binding Y}"
         		                     IndependentValueBinding="{Binding X}"
                                      ItemsSource="{Binding ObservedRollDataPoints}" />
-                <Charting:LineSeries Title="Observed Pitch"
-                                     IsSelectionEnabled="True" 
-        		                     DependentValueBinding="{Binding Y}"
-        		                     IndependentValueBinding="{Binding X}"
-                                     ItemsSource="{Binding ObservedPitchDataPoints}" />
-                <Charting:LineSeries Title="Observed Yaw"
-                                     IsSelectionEnabled="True" 
-        		                     DependentValueBinding="{Binding Y}"
-        		                     IndependentValueBinding="{Binding X}"
-                                     ItemsSource="{Binding ObservedYawDataPoints}" />
-                <Charting:LineSeries Title="Observed Throttle"
-                                     IsSelectionEnabled="True" 
-        		                     DependentValueBinding="{Binding Y}"
-        		                     IndependentValueBinding="{Binding X}"
-                                     ItemsSource="{Binding ObservedThrottleDataPoints}" />
                 <Charting:LineSeries Title="Commanded Roll"
                                      IsSelectionEnabled="True" 
         		                     DependentValueBinding="{Binding Y}"
         		                     IndependentValueBinding="{Binding X}"
                                      ItemsSource="{Binding CommandedRollDataPoints}" />
+            </Charting:Chart>
+            <Charting:Chart Grid.Row="1"
+                            Grid.Column="0"
+                            Margin="5"
+                            VerticalAlignment="Stretch"
+                            HorizontalAlignment="Stretch">
+                <Charting:Chart.Axes>
+                    <Charting:DateTimeAxis Orientation="X"
+                                           Title="Time"
+                                           ShowGridLines="True" />
+                    <Charting:LinearAxis Orientation="Y"
+                                         ShowGridLines="True"
+                                         Title="Normalized Value" />
+                </Charting:Chart.Axes>
+                <Charting:LineSeries Title="Observed Pitch"
+                                     IsSelectionEnabled="True" 
+        		                     DependentValueBinding="{Binding Y}"
+        		                     IndependentValueBinding="{Binding X}"
+                                     ItemsSource="{Binding ObservedPitchDataPoints}" />
                 <Charting:LineSeries Title="Commanded Pitch"
                                      IsSelectionEnabled="True" 
         		                     DependentValueBinding="{Binding Y}"
         		                     IndependentValueBinding="{Binding X}"
                                      ItemsSource="{Binding CommandedPitchDataPoints}" />
+            </Charting:Chart>
+            <Charting:Chart Grid.Row="1"
+                            Grid.Column="1"
+                            Margin="5"
+                            VerticalAlignment="Stretch"
+                            HorizontalAlignment="Stretch">
+                <Charting:Chart.Axes>
+                    <Charting:DateTimeAxis Orientation="X"
+                                           Title="Time"
+                                           ShowGridLines="True" />
+                    <Charting:LinearAxis Orientation="Y"
+                                         ShowGridLines="True"
+                                         Title="Normalized Value" />
+                </Charting:Chart.Axes>
+                <Charting:LineSeries Title="Observed Yaw"
+                                     IsSelectionEnabled="True" 
+        		                     DependentValueBinding="{Binding Y}"
+        		                     IndependentValueBinding="{Binding X}"
+                                     ItemsSource="{Binding ObservedYawDataPoints}" />
                 <Charting:LineSeries Title="Commanded Yaw"
                                      IsSelectionEnabled="True" 
         		                     DependentValueBinding="{Binding Y}"
         		                     IndependentValueBinding="{Binding X}"
                                      ItemsSource="{Binding CommandedYawDataPoints}" />
-                <Charting:LineSeries Title="Commanded Throttle"
-                                     IsSelectionEnabled="True" 
-        		                     DependentValueBinding="{Binding Y}"
-        		                     IndependentValueBinding="{Binding X}"
-                                     ItemsSource="{Binding CommandedThrottleDataPoints}" />
             </Charting:Chart>
         </Grid>        
     </Grid>

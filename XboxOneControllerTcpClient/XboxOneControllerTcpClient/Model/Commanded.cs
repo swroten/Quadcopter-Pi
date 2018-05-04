@@ -22,6 +22,10 @@ namespace XboxOneControllerTcpClient.Model
 
         public bool Exit { get; set; } = false;
 
+        public bool Snap { get; set; } = false;
+
+        public bool ResetError { get; set; } = false;
+
         public double Roll
         {
             get

@@ -13,6 +13,10 @@
 
         public bool Armed { get; set; } = false;
 
+        public bool Snap { get; set; } = false;
+
+        public bool ResetError { get; set; } = false;
+
         public double Roll { get; set; } = 0.0;
 
         public double RollKp { get; set; } = 0.0;
