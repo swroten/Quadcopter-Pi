@@ -1,4 +1,3 @@
-# Quadcopter Flying Code
 #!/usr/bin/env python2
 import Quadcopter
 import IMU
@@ -6,6 +5,7 @@ import GPS
 import Server
 import PID
 import time
+import numpy as np
 from picamera import PiCamera
 from threading import Thread
 #import thread
@@ -87,9 +87,15 @@ last_time = time.time()
 
 # Run Forever
 while running:
-    try:        
+    try:
+        # Get Time since last update
+        delta_time = (time.time() - last_time)
+                
         # Update Current Observed Values
         imu.update()
+
+        # Update Flight States
+        quad.update(delta_time)
 
         # Get Observed Values    
         #oYaw = imu.get_scaled_yaw()
@@ -162,7 +168,10 @@ while running:
     
         throttlePID.setProportionalConstant(cThrottleKp)
         throttlePID.setIntegralConstant(cThrottleKi)
-        throttlePID.setDerivativeConstant(cThrottleKd) 
+        throttlePID.setDerivativeConstant(cThrottleKd)
+
+        # Restrict Roll to Min and Max of (+/- 30 degrees)
+        cRoll = min(0.33, max(-0.33, cRoll))
     
         # Update all of the PID Loops
         yawOutput = yawPID.update(cYaw, oYaw)
@@ -213,9 +222,6 @@ while running:
         if (not running):
            quad.stop()
 
-        # Get Time since last update
-        delta_time = (time.time() - last_time)
-        
         # Print Values for RPM if print line time has passed
         if (delta_time > print_rpm_freq):
             # Print RPM for motors
