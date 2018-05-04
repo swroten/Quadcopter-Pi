@@ -11,7 +11,11 @@ from Adafruit_BNO055 import BNO055
 
 # Define Class for IMU
 class IMU:
-    def __init__(self):    
+    def __init__(self):
+        # Create failure counter
+        self.failure_counter = 0
+        self.max_failures = 5
+        
         # Print Statement about Connecting to IMU
         print("Connecting to Adafruit IMU...")
         
@@ -55,8 +59,16 @@ class IMU:
         try:
             # Read the Euler angles for heading, roll, pitch (all in degrees).
             self.heading, self.roll, self.pitch = self.bno.read_euler()
+
+            # Clear failure counter if successful
+            self.failure_counter = 0
         except:
-            pass
+            # Increment Failure Counter
+            self.failure_counter = self.failure_counter + 1
+
+            # if greater than max failures, throw exception
+            if (self.failure_counter > self.max_failures):
+                raise
 
     def get_raw_roll(self):
         return self.roll
@@ -76,7 +88,7 @@ class IMU:
 
     def get_scaled_pitch(self):
         # Initialize Scaled Pitch
-        scaled_pitch = self.scale(self.roll, -180.0, 180.0, -1.0, 1.0)
+        scaled_pitch = self.scale(self.pitch, -180.0, 180.0, -1.0, 1.0)
 
         # return a value between -1.0 and 1.0
         return min(1.0, max(-1.0, scaled_pitch))
