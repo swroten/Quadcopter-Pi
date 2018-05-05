@@ -235,9 +235,9 @@ class Quadcopter:
         self.armed = False
 
     # Print RPM
-    def print_rpm_for_motors(self):
-        print("THETA -> R:{0:0.2F}, P:{1:0.2F}, Y:{2:0.2F}, RPM -> FL: {3:0.2F}, FR: {4:0.2F}, BL: {5:0.2F}, BR: {6:0.2F}".format(
-            self.get_raw_roll(), self.get_raw_pitch(), self.get_raw_yaw(), self.FrontLeftRPM, self.FrontRightRPM, self.BackLeftRPM, self.BackRightRPM))   
+    def print_rpm_for_motors(self, roll, pitch, yaw, oRoll, oPitch, oYaw, oThrottle):
+        print("RPM -> FL:{3:0.2F},FR:{4:0.2F},BL:{5:0.2F},BR:{6:0.2F},THETA -> R:{0:0.2F},P:{1:0.2F},Y:{2:0.2F},OUT -> R:{0:0.2F},P:{1:0.2F},Y:{2:0.2F},T:{3:0.2F}".format(
+            self.FrontLeftRPM, self.FrontRightRPM, self.BackLeftRPM, self.BackRightRPM, roll, pitch, yaw, oRoll, oPitch, oYaw, oThrottle))   
 
     def compute_rotation(self, roll, pitch, yaw):
         return np.matrix(([ math.cos(yaw)*math.cos(pitch), math.cos(yaw)*math.sin(pitch)*math.sin(roll)-math.sin(yaw)*math.cos(roll), math.cos(yaw)*math.sin(pitch)*math.cos(roll)+math.sin(yaw)*math.sin(roll) ],

@@ -6,7 +6,6 @@ import Server
 import PID
 import time
 import numpy as np
-from picamera import PiCamera
 from threading import Thread
 #import thread
 
@@ -23,9 +22,6 @@ except:
 # Create GPS Class
 #gps = GPS.GPS()
 
-# Create Camera
-#camera = PiCamera()
-
 # Create Quadcopter
 quad = Quadcopter.Quadcopter()
 
@@ -35,8 +31,11 @@ cResetError = False
 
 # Create Reference to PID Variables
 cYaw = 0.0
+rYaw = 0.0
 cRoll = 0.0
+rRoll = 0.0
 cPitch = 0.0
+rPitch = 0.0
 cThrottle = 0.0
 cYawKi = 0.05
 cYawKp = 0.10
@@ -114,12 +113,22 @@ while running:
             oYaw = imu.get_scaled_yaw()
             oRoll = imu.get_scaled_roll()
             oPitch = imu.get_scaled_pitch()
+
+            # Get Raw Values
+            rYaw = imu.get_raw_yaw()
+            rRoll = imu.get_raw_roll()
+            rPitch = imu.get_raw_pitch()
         else:
             # otherwise - assume in test mode
             #  get roll, pitch and yaw from Quad
             oYaw = quad.get_scaled_yaw()
             oRoll = quad.get_scaled_roll()
             oPitch = quad.get_scaled_pitch()
+            
+            # Get Raw Values
+            rYaw = quad.get_raw_yaw()
+            rRoll = quad.get_raw_roll()
+            rPitch = quad.get_raw_pitch()
             
         # Update Observed Values in Server
         Server.observed['Armed'] = oArmed
@@ -257,10 +266,8 @@ while running:
         # Print Values for RPM if print line time has passed
         if (delta_time > print_rpm_freq):
             # Print RPM for motors
-            #quad.print_rpm_for_motors()
-
-            print("OUT -> R:{0:0.2F}, P:{1:0.2F}, Y:{2:0.2F}, T:{3:0.2F}".format(rollOutput, pitchOutput, yawOutput, throttleOutput))
-
+            quad.print_rpm_for_motors(rRoll, rPitch, rYaw, rollOutput, pitchOutput, yawOutput, throttleOutput)
+            
             # Recall this time
             last_time = time.time()
             
