@@ -31,9 +31,9 @@ namespace XboxOneControllerTcpClient.ViewModel
             _commandedData = new Commanded();
             FlightStateDataViewModels = new List<FlightStateDataViewModel>()
             {
-                new FlightStateDataViewModel(FlightStates.Roll, _commandedData, _observedData) {  cKp = 0.1, cKi = 0.01, cKd = 0.005 },
-                new FlightStateDataViewModel(FlightStates.Pitch, _commandedData, _observedData) { cKp = 0.1, cKi = 0.01, cKd = 0.005 },
-                new FlightStateDataViewModel(FlightStates.Yaw, _commandedData, _observedData) { cKp = 0.1, cKi = 0.01, cKd = 0.005 },
+                new FlightStateDataViewModel(FlightStates.Roll, _commandedData, _observedData) {  cKp = 0.001, cKi = 0.0001, cKd = 0.00005 },
+                new FlightStateDataViewModel(FlightStates.Pitch, _commandedData, _observedData) { cKp = 0.001, cKi = 0.0001, cKd = 0.00005 },
+                new FlightStateDataViewModel(FlightStates.Yaw, _commandedData, _observedData) { cKp = 0.001, cKi = 0.0001, cKd = 0.00005 },
                 new FlightStateDataViewModel(FlightStates.Throttle, _commandedData, _observedData) { cKp = 0.1, cKi = 0.2, cKd = 0.0 }
             };
 
@@ -294,10 +294,10 @@ namespace XboxOneControllerTcpClient.ViewModel
             RightTriggerValue = reading.RightTrigger;
             
             // Update Commanded Flight Data
-            // CommandedData.Yaw = LeftThumbStickX;
-            // CommandedData.Throttle = LeftThumbStickY;
-            // CommandedData.Roll = RightThumbStickX;
-            // CommandedData.Pitch = RightThumbStickY;
+            CommandedData.Yaw = LeftThumbStickX;
+            CommandedData.Throttle = LeftThumbStickY;
+            CommandedData.Roll = RightThumbStickX;
+            CommandedData.Pitch = RightThumbStickY;
                    
             // Disarm is B is Pressed and it is currently Armed
             if (reading.Buttons.HasFlag(GamepadButtons.B) && CommandedArmed)
