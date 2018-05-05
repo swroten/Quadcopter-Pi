@@ -74,8 +74,7 @@ class PID:
                 self.integral_term = self.max_signal
             
             # Compute Derivative
-            self.derivative_term = (self.kd * ((((self.error - self.last_error) / self.dt) * self.filter) + 
-                (self.last_derivative * (1 - self.filter))))
+            self.derivative_term = (self.kd * ((self.error - self.last_error) / self.dt))
                 
             # Recall Last Error and Derivative
             self.last_error = self.error

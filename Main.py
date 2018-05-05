@@ -102,7 +102,7 @@ while running:
         oThrottle = quad.get_scaled_thrust() 
 
         # Update Flight States
-        quad.update(delta_time)
+        quad.update()
 
         # Get if Quad is Armed   
         oArmed = quad.get_is_armed()
@@ -201,6 +201,9 @@ while running:
 
         # Restrict Roll to Min and Max of (+/- 30 degrees)
         cRoll = min(0.33, max(-0.33, cRoll))
+
+        # Restrict Pitch to Min and Max of (+/- 30 degrees)
+        cPitch = min(0.33, max(-0.33, cPitch))
     
         # Update all of the PID Loops
         yawOutput = yawPID.update(cYaw, oYaw)
@@ -212,9 +215,9 @@ while running:
         quad.process_flight_states(throttleOutput, rollOutput, pitchOutput, yawOutput)
 
         # Get  Updated PID Error Values
+        oYawError = yawPID.getError()
         oRollError = rollPID.getError()
         oPitchError = pitchPID.getError()
-        oYawError = yawPID.getError()
         oThrottleError = throttlePID.getError()
     
         # Arm if Commanded
@@ -254,7 +257,9 @@ while running:
         # Print Values for RPM if print line time has passed
         if (delta_time > print_rpm_freq):
             # Print RPM for motors
-            quad.print_rpm_for_motors()
+            #quad.print_rpm_for_motors()
+
+            print("OUT -> R:{0:0.2F}, P:{1:0.2F}, Y:{2:0.2F}, T:{3:0.2F}".format(rollOutput, pitchOutput, yawOutput, throttleOutput))
 
             # Recall this time
             last_time = time.time()
