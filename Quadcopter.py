@@ -41,6 +41,7 @@ class Quadcopter:
         inertia_y = float(mass_center + (2 * self.arm_length * self.arm_length * self.motor_mass))
         inertia_z = float(mass_center + (4 * self.arm_length * self.arm_length * self.motor_mass))
         self.inertia = np.matrix(([inertia_x,0.0,0.0],[0.0,inertia_y,0.0],[0.0,0.0,inertia_z]))
+        self.inertia_inverse =  np.matrix(([(1/inertia_x),0.0,0.0],[0.0,(1/inertia_y),0.0],[0.0,0.0,(1/inertia_z)]))
         
         # Equations of State
         self.up_vector = np.matrix(([0.0],[0.0],[0.0]))
@@ -123,6 +124,9 @@ class Quadcopter:
         # Set Minimum Throttle Threshold
         self.minimum_throttle = 0.01
 
+        # Set Last Update Time
+        self.last_update = time.time()
+
     # Get Whether Armed
     def get_is_armed(self):
         return self.armed
@@ -155,15 +159,15 @@ class Quadcopter:
 
     # Get Theoretical Raw Roll
     def get_raw_roll(self):
-        return math.degrees(self.theta.item(0))
+        return min(90.0, max(-90.0, math.degrees(self.theta.item(0) % (2 * math.pi))))
 
     # Get Theoretical Raw Pitch
     def get_raw_pitch(self):
-        return math.degrees(self.theta.item(1))
+        return min(180.0, max(-180.0, math.degrees(self.theta.item(1) % (2 * math.pi))))
 
     # Get Theoretical Raw Yaw
     def get_raw_yaw(self):
-        return math.degrees(self.theta.item(2))
+        return math.degrees(self.theta.item(2) % (2 * math.pi))
 
     # Get Theoretical Raw Throttle
     def get_raw_thrust(self):
@@ -232,8 +236,8 @@ class Quadcopter:
 
     # Print RPM
     def print_rpm_for_motors(self):
-        print("THETA -> R:{0:0.2F}, P:{1:0.2F}, Y:{2:0.2F}, RPM -> FL: {3:0.2F}, FR: {4:0.2F}, BL: {5:0.2F}, BR: {6:0.2F}, TORQUE -> T: {7}".format(
-            self.get_raw_roll(), self.get_raw_pitch(), self.get_raw_yaw(), self.FrontLeftRPM, self.FrontRightRPM, self.BackLeftRPM, self.BackRightRPM, self.torque))   
+        print("THETA -> R:{0:0.2F}, P:{1:0.2F}, Y:{2:0.2F}, RPM -> FL: {3:0.2F}, FR: {4:0.2F}, BL: {5:0.2F}, BR: {6:0.2F}".format(
+            self.get_raw_roll(), self.get_raw_pitch(), self.get_raw_yaw(), self.FrontLeftRPM, self.FrontRightRPM, self.BackLeftRPM, self.BackRightRPM))   
 
     def compute_rotation(self, roll, pitch, yaw):
         return np.matrix(([ math.cos(yaw)*math.cos(pitch), math.cos(yaw)*math.sin(pitch)*math.sin(roll)-math.sin(yaw)*math.cos(roll), math.cos(yaw)*math.sin(pitch)*math.cos(roll)+math.sin(yaw)*math.sin(roll) ],
@@ -263,7 +267,13 @@ class Quadcopter:
         return (angles * omega)
 
     # Update Flight States
-    def update(self, delta_time):
+    def update(self):
+        # Compute delta_time
+        delta_time = (time.time() - self.last_update)
+
+        # recall last update time
+        self.last_update = time.time()
+        
         # Create matrix for gravity
         gravity = np.matrix(([0.0],[0.0],[self.gravity]))
 
@@ -303,7 +313,7 @@ class Quadcopter:
         vector_product = np.matrix(([inertia_omega_product.item(0), inertia_omega_product.item(1), inertia_omega_product.item(2)]))
         vector_cross_product = (np.cross(vector_omega, vector_product))
         matrix_cross_product = np.matrix(([vector_cross_product.item(0), vector_cross_product.item(1), vector_cross_product.item(2)]))
-        omegadot = (np.linalg.inv(self.inertia) * (torque - matrix_cross_product))
+        omegadot = (self.inertia_inverse * (self.torque - matrix_cross_product))
         
         # Update Angular Velocity
         omega = omega + (delta_time * omegadot)
@@ -326,23 +336,29 @@ class Quadcopter:
 
         # Only Perform standard flight if above minimum throttle threshold
         if (throttleOutput >  self.minimum_throttle):
+            # Get Demanded Outputs
+            frontLeftOutput = (throttleOutput + rollOutput - pitchOutput - yawOutput)
+            frontRightOutput = (throttleOutput - rollOutput - pitchOutput + yawOutput)
+            backRightOutput = (throttleOutput - rollOutput + pitchOutput - yawOutput)
+            backLeftOutput = (throttleOutput + rollOutput + pitchOutput + yawOutput)
+                        
             # Handle Front Left
-            frontLeftDemandedOutput = self.scale((throttleOutput + rollOutput - pitchOutput - yawOutput), 0.0, self.OutputMaximum, self.MinimumSignal, self.MaximumSignal)
+            frontLeftDemandedOutput = self.scale(frontLeftOutput, 0.0, self.OutputMaximum, self.MinimumSignal, self.MaximumSignal)
             self.FrontLeftScaledPulseWidth = max(self.MinimumSignal, min(self.MaximumSignal, frontLeftDemandedOutput))
             self.FrontLeftPulseWidth = self.scale(self.FrontLeftScaledPulseWidth, self.MinimumSignal, self.MaximumSignal, self.FrontLeftMinimumPulseWidth, self.FrontLeftMaximumPulseWidth)
 
             # Handle Front Right
-            frontRightDemandedOutput = self.scale((throttleOutput - rollOutput - pitchOutput + yawOutput), 0.0, self.OutputMaximum, self.MinimumSignal, self.MaximumSignal)
+            frontRightDemandedOutput = self.scale(frontRightOutput, 0.0, self.OutputMaximum, self.MinimumSignal, self.MaximumSignal)
             self.FrontRightScaledPulseWidth = max(self.MinimumSignal, min(self.MaximumSignal, frontRightDemandedOutput))
             self.FrontRightPulseWidth = self.scale(self.FrontRightScaledPulseWidth, self.MinimumSignal, self.MaximumSignal, self.FrontRightMinimumPulseWidth, self.FrontRightMaximumPulseWidth)
                 
             # Handle Back Left
-            backLeftDemandedOutput = self.scale((throttleOutput + rollOutput + pitchOutput + yawOutput), 0.0, self.OutputMaximum, self.MinimumSignal, self.MaximumSignal)
+            backLeftDemandedOutput = self.scale(backLeftOutput, 0.0, self.OutputMaximum, self.MinimumSignal, self.MaximumSignal)
             self.BackLeftScaledPulseWidth = max(self.MinimumSignal, min(self.MaximumSignal, backLeftDemandedOutput))
             self.BackLeftPulseWidth = self.scale(self.BackLeftScaledPulseWidth, self.MinimumSignal, self.MaximumSignal, self.BackLeftMinimumPulseWidth, self.BackLeftMaximumPulseWidth)
                 
             # Handle Back Right
-            backRightDemandedOutput = self.scale((throttleOutput - rollOutput + pitchOutput - yawOutput), 0.0, self.OutputMaximum, self.MinimumSignal, self.MaximumSignal)
+            backRightDemandedOutput = self.scale(backRightOutput, 0.0, self.OutputMaximum, self.MinimumSignal, self.MaximumSignal)
             self.BackRightScaledPulseWidth = max(self.MinimumSignal, min(self.MaximumSignal, backRightDemandedOutput))
             self.BackRightPulseWidth = self.scale(self.BackRightScaledPulseWidth, self.MinimumSignal, self.MaximumSignal, self.BackRightMinimumPulseWidth, self.BackRightMaximumPulseWidth)
         
