@@ -31,10 +31,10 @@ namespace XboxOneControllerTcpClient.ViewModel
             _commandedData = new Commanded();
             FlightStateDataViewModels = new List<FlightStateDataViewModel>()
             {
-                new FlightStateDataViewModel(FlightStates.Roll, _commandedData, _observedData) {  cKp = 0.0, cKi = 0.0, cKd = 0.0 },
-                new FlightStateDataViewModel(FlightStates.Pitch, _commandedData, _observedData) { cKp = 0.0, cKi = 0.0, cKd = 0.0 },
-                new FlightStateDataViewModel(FlightStates.Yaw, _commandedData, _observedData) { cKp = 0.0, cKi = 0.0, cKd = 0.0 },
-                new FlightStateDataViewModel(FlightStates.Throttle, _commandedData, _observedData) { cKp = 0.2, cKi = 0.2, cKd = 0.0 }
+                new FlightStateDataViewModel(FlightStates.Roll, _commandedData, _observedData) {  cKp = 0.1, cKi = 0.01, cKd = 0.005 },
+                new FlightStateDataViewModel(FlightStates.Pitch, _commandedData, _observedData) { cKp = 0.1, cKi = 0.01, cKd = 0.005 },
+                new FlightStateDataViewModel(FlightStates.Yaw, _commandedData, _observedData) { cKp = 0.1, cKi = 0.01, cKd = 0.005 },
+                new FlightStateDataViewModel(FlightStates.Throttle, _commandedData, _observedData) { cKp = 0.1, cKi = 0.2, cKd = 0.0 }
             };
 
             // Set Initial PID Constants
@@ -310,6 +310,9 @@ namespace XboxOneControllerTcpClient.ViewModel
                 CommandedArmed = true;
             }
 
+            // Perform error reset if X is Pressed
+            CommandedData.ResetError = (reading.Buttons.HasFlag(GamepadButtons.X) || (CommandedData.ResetError));
+
             // Check if D-PAD Up / Down / Left / Right Selected
             if (reading.Buttons.HasFlag(GamepadButtons.DPadUp))
             {
@@ -357,6 +360,16 @@ namespace XboxOneControllerTcpClient.ViewModel
                 
                 // Update Flight Data
                 ObservedData = _myRestClient.Update(_observedData, _commandedData).Result;
+
+                // Check if Observed Error Reset
+                if (ObservedData.ResetError)
+                {
+                    // Clear Command for Reset Error
+                    CommandedData.ResetError = false;
+
+                    // Clear Observed for Reset Error
+                    ObservedData.ResetError = false;
+                }
             }
 
             // Notify Update
